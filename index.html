@@ -503,7 +503,7 @@ const SETTINGS=[{k:'-',l:'Egal'},{k:'walk',l:'Spaziergang'},{k:'meal',l:'Essen'}
 const TONE_L={warm:'warm',verspielt:'verspielt',herausfordernd:'herausfordernd'};
 const THEME_L={beziehung:'Beziehung',familie:'Familie',selbstbild:'Selbstbild',werte:'Werte',vergangenheit:'Vergangenheit',zukunft:'Zukunft',gefuehle:'Gefühle',alltag:'Alltag'};
 
-const PRICE={in:2.0/1e6,out:10.0/1e6};
+const PRICE={in:1.0/1e6,out:5.0/1e6};
 const MODEL='claude-sonnet-4-6';
 const GEN_TARGET=12, REFILL_AT=5, SKETCH_EVERY=12, GEN_SHARE=0.35, CALIB_N=10;
 
@@ -595,7 +595,7 @@ Schreibe 2 knappe Sätze, direkt an die Person ("Du …"), konkret, ohne Küchen
 Antworte NUR mit JSON, ohne Backticks:
 {"bild":"2 Sätze","worte":["wort1","wort2","wort3"]}`;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:MODEL,max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();
@@ -679,7 +679,7 @@ async function generateBatch(){
   S.generating=true; renderSelfIfOpen();
   const prompt=buildPrompt(); S.lastPrompt=prompt;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:MODEL,max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();
@@ -716,7 +716,7 @@ Schreibe eine sehr kurze Präferenz-Skizze für die Rolle "${r.l}". Erkenne Must
 Antworte NUR mit JSON, ohne Backticks:
 {"mag":"max 16 Wörter","magNicht":"max 16 Wörter","tones":{"warm":-1..1,"verspielt":-1..1,"herausfordernd":-1..1}}`;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:MODEL,max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();

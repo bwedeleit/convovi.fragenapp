@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#f5805c" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Convovi · Frag-O-Mat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --terra:#f5805c; --terra-deep:#e56b46; --terra-soft:rgba(245,128,92,.16);
+  --cream:#fbf6f0; --char:#2b2622;
+  --bg:#f5805c; --surface:#fbf6f0; --ink:#2b2622; --dim:#6f6862; --faint:#a79c92; --line:#ece2d6;
+  --card:#fbf6f0; --cink:#2b2622; --cdim:#8a7d70;
+  --acc:#e56b46; --accsoft:rgba(229,107,70,.14);
+  --green:#2ea88c; --green-soft:rgba(46,168,140,.16);
+  --like:#2ea88c; --nope:#e0703c; --save:#c98a3e; --onTerra:#fff;
+  --nope-glow:rgba(224,112,60,.34); --green-glow:rgba(46,168,140,.38);
+  --calib:#6b6fc9; --calib-soft:rgba(107,111,201,.14); --calib-glow:rgba(107,111,201,.34);
+  --mono:'JetBrains Mono',ui-monospace,monospace; --sans:'Inter',system-ui,sans-serif;
+  --disp:'Fraunces',Georgia,serif; --grotesk:'Inter',sans-serif;
+}
+body.work{ --bg:#2b2622; --surface:#332e29; --ink:#f6efe6; --dim:#c3b8ac; --faint:#8b8073;
+  --line:#443d36; --card:#332e29; --cink:#f6efe6; --cdim:#a99d8f;
+  --acc:#f5805c; --accsoft:rgba(245,128,92,.16);
+  --green:#39b89a; --green-soft:rgba(57,184,154,.18); --like:#39b89a; --nope:#f0854c; --save:#dca85a;
+  --nope-glow:rgba(240,133,76,.32); --green-glow:rgba(57,184,154,.36);
+  --calib:#8f92e0; --calib-soft:rgba(143,146,224,.16); --calib-glow:rgba(143,146,224,.32); }
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;transition:background .5s ease}
+button{font-family:inherit;cursor:pointer}
+svg{display:block}
+.hidden{display:none !important}
+.wrap{max-width:480px;margin:0 auto;padding:18px 18px 30px}
+
+header.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.logo{font-family:var(--grotesk);font-weight:800;font-size:22px;letter-spacing:.02em;color:var(--onTerra);text-transform:uppercase}
+.logo small{display:block;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.7);letter-spacing:.05em;font-weight:400;margin-top:2px;text-transform:none}
+body.work .logo{color:var(--terra)} body.work .logo small{color:rgba(245,128,92,.7)}
+
+/* ============ KALIBRIERUNG: Intro & Abschluss ============ */
+.screen{background:var(--surface);border-radius:26px;padding:40px 30px 32px;text-align:center;box-shadow:0 20px 46px -26px rgba(43,38,34,.5)}
+.picto{width:96px;height:96px;margin:6px auto 22px;border-radius:26px;background:var(--accsoft);display:grid;place-items:center;color:var(--terra)}
+.picto svg{width:52px;height:52px}
+.screen h1{font-family:var(--grotesk);font-weight:800;font-size:27px;line-height:1.12;letter-spacing:-.01em;margin:0 0 12px;text-transform:uppercase;color:var(--ink)}
+.screen p{font-size:14px;color:var(--dim);margin:0 auto 26px;line-height:1.6;max-width:330px}
+.steps{display:flex;gap:6px;justify-content:center;margin:0 auto 26px;max-width:280px}
+.steps i{height:5px;flex:1;background:var(--line);border-radius:3px}
+.steps i.on{background:var(--terra)}
+.bigbtn{background:var(--terra);border:0;color:#fff;font-weight:700;font-size:15px;border-radius:999px;padding:15px 40px;transition:.15s}
+.bigbtn:hover{background:var(--terra-deep)}
+.mini{margin-top:16px;font-family:var(--mono);font-size:11px;color:var(--faint)}
+.donerow{display:flex;flex-direction:column;gap:10px;text-align:left;margin:0 auto 26px;max-width:340px}
+.donerow .ins{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 15px}
+body.work .donerow .ins{background:#3d372f}
+.donerow .ins .ic{flex:none;width:30px;height:30px;border-radius:9px;background:var(--accsoft);color:var(--terra);display:grid;place-items:center;font-size:15px}
+.donerow .ins .tx{font-size:13.5px;color:var(--dim);line-height:1.5}
+.donerow .ins .tx b{color:var(--ink);font-weight:600}
+.modeswitch{display:flex;flex-direction:column;align-items:center;gap:8px;margin:0 auto 26px}
+.modeswitch .ms{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;padding:11px 16px;border-radius:999px}
+.modeswitch .ms.done{background:var(--calib-soft);color:var(--calib)}
+.modeswitch .ms.next{background:var(--accsoft);color:var(--terra-deep)}
+.modeswitch .msn{font-size:14px}
+.modeswitch .mscheck{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#2ea88c;color:#fff}
+.modeswitch .mscheck svg{width:11px;height:11px}
+.modeswitch .msarrow{color:var(--faint)}
+.modeswitch .msarrow svg{width:20px;height:20px}
+
+/* ============ PHONE ============ */
+
+.phone{background:var(--surface);border-radius:28px;padding:14px 14px 12px;box-shadow:0 24px 50px -28px rgba(43,38,34,.55)}
+.pbar{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 10px;min-height:30px}
+.pbar .who{font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+.picons{display:flex;gap:8px}
+.iconbtn{position:relative;width:38px;height:38px;border-radius:12px;background:#fff;border:1px solid var(--line);color:var(--dim);display:grid;place-items:center;transition:.15s}
+body.work .iconbtn{background:#3d372f}
+.iconbtn:hover{color:var(--terra);border-color:var(--terra);transform:translateY(-1px)} .iconbtn svg{width:18px;height:18px}
+
+/* calibration progress */
+.calibbar{padding:2px 4px 12px}
+.calibbar .cl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--dim);margin-bottom:8px}
+.modetag{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.02em;padding:4px 9px;border-radius:999px;text-transform:uppercase}
+.modetag.mode1{background:var(--calib-soft);color:var(--calib)}
+.modetag.mode2{background:var(--accsoft);color:var(--terra-deep)}
+body.work .modetag.mode2{color:var(--terra)}
+.calibbar .cl b{color:var(--terra);font-weight:700}
+.calibbar .track{height:6px;background:rgba(43,38,34,.08);border-radius:999px;overflow:hidden}
+body.work .calibbar .track{background:rgba(255,255,255,.1)}
+.calibbar .track i{display:block;height:100%;background:var(--terra);border-radius:999px;transition:width .4s cubic-bezier(.2,.7,.2,1)}
+
+/* deck */
+.deck{position:relative;height:322px;margin:6px 6px 26px}
+.qcard{position:absolute;inset:0;background:var(--card);border:1px solid var(--line);color:var(--cink);border-radius:22px;padding:24px 22px;display:flex;flex-direction:column;box-shadow:0 14px 30px -18px rgba(43,38,34,.4);will-change:transform}
+body.work .qcard{border-color:#443d36}
+.qcard .corner{position:absolute;top:16px;right:16px;width:16px;height:16px;border-radius:50%;background:var(--terra-soft)}
+.qcard.shell{pointer-events:none}.qcard.shell .corner{opacity:.5}
+.qcard.top{cursor:grab;user-select:none;touch-action:none}.qcard.top:active{cursor:grabbing}
+.qcard.top.enter{transform:scale(.955) translateY(-8px);opacity:.5}
+.srcbadge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.02em;text-transform:uppercase;padding:5px 10px;border-radius:999px;align-self:flex-start}
+.srcbadge.kur{background:var(--accsoft);color:var(--terra-deep)}
+.srcbadge.gen{background:var(--terra);color:#fff}
+.srcbadge .sp{width:5px;height:5px;border-radius:50%;background:currentColor}
+.qtext{font-family:var(--disp);font-weight:500;font-size:22px;line-height:1.3;margin:auto 0;letter-spacing:-.01em;padding-right:6px;color:var(--cink)}
+.qmeta{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+.qmeta i{font-style:normal;font-family:var(--mono);font-size:9.5px;font-weight:400;color:var(--cdim);background:rgba(43,38,34,.06);border-radius:999px;padding:3px 8px}
+body.work .qmeta i{background:rgba(255,255,255,.08)}
+.qcard.empty{display:grid;place-items:center;text-align:center;color:var(--faint);font-size:13px}
+.qcard.empty .es{line-height:1.6}
+/* Kalibrierungs-Karte: nur die Aussage, vertikal & horizontal mittig */
+.qcard.calibcard{justify-content:center}
+.calibstem{font-family:var(--disp);font-weight:500;font-size:21px;line-height:1.32;letter-spacing:-.01em;color:var(--cink);margin:0;text-align:center;padding:0 8px}
+.calibcta{display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--calib);opacity:.7;margin:18px 0 0}
+/* Labels unter der Karte: was links / rechts bedeutet */
+.caliblabels{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:0 6px;margin-top:14px;position:relative;z-index:11}
+.cllab{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--faint);transition:.18s;padding:8px 10px;border-radius:12px}
+.cllab svg{width:16px;height:16px}
+.cllab.armed{color:var(--calib);background:var(--calib-soft);transform:scale(1.04)}
+/* Impuls: Karte wackelt einmal leicht, um Swipe zu zeigen */
+@keyframes calibwiggle{0%,100%{transform:translateX(0) rotate(0)}20%{transform:translateX(-13px) rotate(-2deg)}40%{transform:translateX(0) rotate(0)}60%{transform:translateX(13px) rotate(2deg)}80%{transform:translateX(0) rotate(0)}}
+.qcard.top.calibwiggle{animation:calibwiggle 1.5s ease-in-out .55s 1}
+/* Kalibrierungs-Edges (beide indigo, kein gut/schlecht) */
+body.calib .edge.left{background:linear-gradient(90deg, var(--calib-glow) 0%, var(--calib-glow) 30%, transparent 88%)}
+body.calib .edge.right{background:linear-gradient(270deg, var(--calib-glow) 0%, var(--calib-glow) 30%, transparent 88%)}
+/* Kalibrierungs-Buttons */
+/* Positionierungs-Farbe HINTER den Karten — füllt die jeweilige Hälfte weich */
+.edge{position:absolute;top:-16px;bottom:-16px;width:66%;pointer-events:none;opacity:0;transition:opacity .16s ease;z-index:0;border-radius:34px;filter:blur(10px)}
+.edge.left{left:-16px;background:linear-gradient(90deg, var(--nope-glow) 0%, var(--nope-glow) 30%, transparent 88%)}
+.edge.right{right:-16px;background:linear-gradient(270deg, var(--green-glow) 0%, var(--green-glow) 30%, transparent 88%)}
+/* Personen-Button unten rechts auf der Karte */
+.personbtn{position:absolute;bottom:16px;right:16px;width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--terra);display:grid;place-items:center;z-index:12;transition:.14s;box-shadow:0 4px 12px -6px rgba(43,38,34,.3)}
+body.work .personbtn{background:#3d372f}
+.personbtn:hover{background:var(--terra);color:#fff;border-color:var(--terra)}
+.personbtn svg{width:19px;height:19px}
+/* Info-Button oben rechts */
+.infobtn{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--faint);display:grid;place-items:center;z-index:12;transition:.14s}
+body.work .infobtn{background:#3d372f}
+.infobtn:hover,.infobtn.on{background:var(--terra);color:#fff;border-color:var(--terra)}
+.infobtn svg{width:17px;height:17px}
+/* Info-Text oben: schiebt die Frage nach unten */
+.cardinfo{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s ease,opacity .25s ease,margin .3s ease;margin-top:0}
+.cardinfo.open{max-height:130px;opacity:1;margin-top:30px}
+.cardinfo .ci{display:block;font-size:12.5px;line-height:1.5;color:var(--cdim);background:var(--accsoft);border-radius:12px;padding:11px 13px;margin-right:38px}
+/* Karten-Aktionen: Reihe unten rechts */
+.cardacts{position:absolute;bottom:14px;right:14px;display:flex;gap:8px;z-index:12}
+.cardbtn{width:36px;height:36px;border-radius:11px;border:1px solid var(--line);background:#fff;color:var(--terra);display:grid;place-items:center;transition:.14s;box-shadow:0 4px 12px -6px rgba(43,38,34,.3)}
+body.work .cardbtn{background:#3d372f}
+.cardbtn:hover,.cardbtn.on{background:var(--terra);color:#fff;border-color:var(--terra)}
+.cardbtn svg{width:18px;height:18px}
+.qmeta{padding-right:46px}
+
+.acts{display:flex;justify-content:center;align-items:flex-start;gap:24px;margin-top:2px}
+.actwrap{display:flex;flex-direction:column;align-items:center;gap:7px}
+.act{width:60px;height:60px;border-radius:50%;border:1.5px solid var(--line);background:#fff;color:var(--dim);display:grid;place-items:center;transition:transform .18s,box-shadow .25s,border-color .25s,color .25s}
+body.work .act{background:#3d372f} .act svg{width:24px;height:24px} .act:hover{transform:translateY(-2px)}
+.actlab{font-family:var(--mono);font-size:10.5px;font-weight:500;color:var(--faint);transition:color .25s}
+.act.n:hover,.act.n.armed{border-color:var(--nope);color:var(--nope)}
+.act.s:hover,.act.s.armed{border-color:var(--save);color:var(--save)}
+.act.y:hover,.act.y.armed{border-color:var(--like);color:var(--like)}
+.act.n.armed{box-shadow:0 0 0 4px rgba(224,112,60,.18),0 8px 20px -6px rgba(224,112,60,.5);transform:translateY(-3px) scale(1.08)}
+.act.s.armed{box-shadow:0 0 0 4px rgba(201,138,62,.18),0 8px 20px -6px rgba(201,138,62,.5);transform:translateY(-3px) scale(1.08)}
+.act.y.armed{box-shadow:0 0 0 4px var(--green-soft),0 8px 20px -6px rgba(46,168,140,.55);transform:translateY(-3px) scale(1.08)}
+.actwrap.armed .actlab{color:var(--ink)}
+
+/* ============ VIDEOS view ============ */
+/* Stufe 2: Prinzip-Karten */
+.plist{display:flex;flex-direction:column;gap:9px}
+.pcard{background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px 15px;cursor:pointer;transition:.15s}
+body.work .pcard{background:#3d372f}
+.pcard:hover{border-color:var(--terra)}
+.pcard.open{border-color:var(--terra)}
+.ph{display:flex;align-items:center;gap:11px}
+.pn{flex:none;font-family:var(--mono);font-size:11px;font-weight:700;color:var(--terra);background:var(--accsoft);border-radius:8px;padding:5px 8px}
+.pt{flex:1;font-size:14.5px;font-weight:600;color:var(--ink);line-height:1.3}
+.pchev{color:var(--faint);font-size:12px}
+.ps{margin-top:11px;padding-top:11px;border-top:1px solid var(--line);font-size:13.5px;line-height:1.6;color:var(--dim)}
+
+.vhead{font-family:var(--grotesk);font-weight:800;text-transform:uppercase;font-size:17px;color:var(--ink);margin:2px 2px 4px}
+.vsub{font-size:12px;color:var(--faint);margin:0 2px 16px;line-height:1.5}
+.vlist{display:flex;flex-direction:column;gap:9px}
+.vrow{display:flex;align-items:center;gap:13px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;transition:.14s}
+body.work .vrow{background:#3d372f}
+.vrow:hover{border-color:var(--terra);transform:translateY(-1px)}
+.vthumb{flex:none;width:46px;height:46px;border-radius:12px;background:var(--accsoft);color:var(--terra);display:grid;place-items:center}
+.vthumb svg{width:24px;height:24px}
+.vmeta{flex:1;min-width:0}
+.vtitle{font-size:14px;font-weight:600;color:var(--ink);line-height:1.3}
+.vinfo{font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:3px}
+.vchev{color:var(--faint)} .vchev svg{width:18px;height:18px}
+
+/* video detail */
+.vback{display:inline-flex;align-items:center;gap:7px;background:none;border:0;color:var(--dim);font-size:13px;font-weight:600;padding:2px;margin-bottom:12px}
+.vback:hover{color:var(--ink)} .vback svg{width:16px;height:16px}
+.vdethead{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.vdethead .vthumb{width:52px;height:52px}
+.vdethead h2{font-family:var(--grotesk);font-weight:800;text-transform:uppercase;font-size:18px;line-height:1.1;margin:0;color:var(--ink)}
+.vdethead .vinfo{margin-top:4px}
+.vallbtn{width:100%;margin:14px 0 4px;background:var(--accsoft);border:1px solid transparent;color:var(--terra-deep);font-weight:600;font-size:13px;border-radius:12px;padding:11px}
+.vallbtn:hover{border-color:var(--terra)}
+.vqlist{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.vq{display:flex;gap:11px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:13px;padding:12px 13px}
+body.work .vq{background:#3d372f}
+.vq .vqt{flex:1;font-size:13.5px;color:var(--dim);line-height:1.45}
+.vq .plus{flex:none;width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:transparent;color:var(--terra);display:grid;place-items:center;transition:.14s}
+.vq .plus:hover{background:var(--terra);color:#fff;border-color:var(--terra)}
+.vq .plus svg{width:16px;height:16px}
+.vq.saved .plus{background:var(--terra);color:#fff;border-color:var(--terra)}
+
+/* ============ LIBRARY view ============ */
+.libtabs{display:flex;gap:6px;margin-bottom:14px;background:rgba(43,38,34,.06);padding:4px;border-radius:12px}
+body.work .libtabs{background:rgba(255,255,255,.06)}
+.libtabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--faint);background:none;border:0;padding:8px 4px;border-radius:9px;transition:.15s}
+.libtabs button .lt{font-size:11.5px;font-weight:600;line-height:1.1}
+.libtabs button .ln{font-family:var(--mono);font-size:13px;font-weight:700;line-height:1}
+.libtabs button.on{background:var(--terra);color:#fff}
+.libhint{font-size:11.5px;color:var(--faint);margin:-4px 0 14px;line-height:1.5}
+.libactions{display:flex;gap:8px;margin-bottom:14px;align-items:center}
+.libactions .grow{flex:1;font-size:12px;color:var(--faint);font-family:var(--mono)}
+.minibtn{font-size:12px;font-weight:600;color:var(--dim);background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 14px;transition:.15s}
+body.work .minibtn{background:#3d372f}
+.minibtn:hover{color:var(--ink);border-color:var(--terra)}
+.minibtn.prim{background:var(--terra);color:#fff;border-color:var(--terra)} .minibtn:disabled{opacity:.4;cursor:not-allowed}
+.qlist{display:flex;flex-direction:column;gap:8px}
+.qrow{display:flex;gap:11px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px 14px;transition:.14s}
+body.work .qrow{background:#3d372f}
+.qrow.sel{cursor:pointer}.qrow.sel:hover{border-color:var(--terra)}
+.qrow .chk{flex:none;width:20px;height:20px;border-radius:6px;border:1.5px solid var(--faint);display:grid;place-items:center;margin-top:1px;transition:.14s}
+.qrow.on .chk{background:var(--terra);border-color:var(--terra);color:#fff}
+.qrow .chk svg{width:12px;height:12px;opacity:0}.qrow.on .chk svg{opacity:1}
+.qrow .qt{font-size:13.5px;color:var(--dim);line-height:1.45}
+.qrow .qrowmain{flex:1;min-width:0}
+.qrow .qmini{font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-top:4px}
+.qrow .qperson{flex:none;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--terra);display:grid;place-items:center;transition:.14s}
+.qrow .qperson:hover{background:var(--terra);color:#fff;border-color:var(--terra)}
+.qrow .qperson svg{width:17px;height:17px}
+.libempty{text-align:center;color:var(--faint);font-size:13px;line-height:1.6;padding:26px 10px}
+.namebox{display:flex;flex-direction:column;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+body.work .namebox{background:#3d372f}
+.namebox .nl{font-size:12px;color:var(--dim);font-weight:600}
+.namerow{display:flex;gap:8px}.namerow input{flex:1}
+.namebox .hint{font-size:11px;color:var(--faint)}
+.coll{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 15px;margin-bottom:10px}
+body.work .coll{background:#3d372f}
+.coll .ch{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer}
+.coll .cn{font-family:var(--disp);font-weight:600;font-size:16px;color:var(--ink)}
+.coll .cc{font-family:var(--mono);font-size:10px;color:var(--faint)}
+.coll .cq{margin-top:11px;padding-top:11px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:7px}
+.coll .cq .cqi{font-size:12.5px;color:var(--dim);line-height:1.4;padding-left:12px;position:relative}
+.coll .cq .cqi:before{content:'';position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:var(--terra)}
+input[type=text],input[type=datetime-local]{width:100%;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px;color:var(--ink);font-family:var(--sans);font-size:14px;outline:none;transition:.15s}
+body.work input[type=text],body.work input[type=datetime-local]{background:#3d372f;color:var(--ink)}
+input[type=text]:focus,input[type=datetime-local]:focus{border-color:var(--terra)} input::placeholder{color:var(--faint)}
+
+/* ============ BOTTOM NAV ============ */
+.bnav{display:flex;border-top:1px solid var(--line);margin:8px -14px -12px;padding:6px 6px 4px}
+.bnav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;color:var(--faint);padding:8px 4px 6px;font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.02em;transition:.15s}
+.bnav button svg{width:21px;height:21px}
+.bnav button.on{color:var(--terra)}
+.bnav .navlab{display:inline-flex;align-items:center;gap:5px}
+.bnav .navlab .cnt{min-width:16px;height:16px;border-radius:8px;background:var(--terra);color:#fff;font-size:9.5px;font-weight:700;display:inline-grid;place-items:center;padding:0 4px;font-family:var(--mono)}
+
+.viewbody{min-height:398px}
+.note{margin-top:14px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.7);text-align:center;line-height:1.7}
+body.work .note{color:var(--faint)}
+.note kbd{background:rgba(255,255,255,.16);border-radius:5px;padding:2px 6px;color:#fff}
+body.work .note kbd{background:rgba(245,128,92,.16);color:var(--terra)}
+
+/* ============ MODALS ============ */
+.backdrop{position:fixed;inset:0;background:rgba(43,38,34,.55);backdrop-filter:blur(3px);z-index:50;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.backdrop.open{opacity:1;pointer-events:auto}
+@media(min-width:600px){.backdrop{align-items:center;padding:24px}}
+.sheet{width:100%;max-width:520px;max-height:86vh;background:var(--surface);border-radius:24px 24px 0 0;display:flex;flex-direction:column;transform:translateY(24px);transition:transform .28s cubic-bezier(.2,.7,.2,1);overflow:hidden}
+@media(min-width:600px){.sheet{border-radius:22px}}
+.backdrop.open .sheet{transform:none}
+.shead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:22px 22px 15px;border-bottom:1px solid var(--line)}
+.shead h2{font-family:var(--grotesk);font-weight:800;font-size:20px;margin:0 0 3px;text-transform:uppercase;letter-spacing:-.01em;color:var(--ink)}
+.shead p{font-size:12px;color:var(--faint);margin:0;line-height:1.5;font-family:var(--mono)}
+.xbtn{flex:none;width:34px;height:34px;border-radius:50%;background:#fff;border:1px solid var(--line);color:var(--dim);display:grid;place-items:center}
+body.work .xbtn{background:#3d372f}.xbtn:hover{color:var(--ink)} .xbtn svg{width:16px;height:16px}
+.sbody{padding:20px 22px 24px;overflow:auto}
+/* save target sheet */
+.savelist{display:flex;flex-direction:column;gap:8px}
+.savet{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px 14px;transition:.14s;text-decoration:none;color:inherit;cursor:pointer}
+a.savet:hover{border-color:var(--terra)}
+body.work .savet{background:#3d372f}
+.savet:hover{border-color:var(--terra)}
+.savet .si{flex:none;width:32px;height:32px;border-radius:9px;background:var(--accsoft);color:var(--terra);display:grid;place-items:center}
+.savet .si svg{width:16px;height:16px}
+.savet .st{flex:1;font-size:13.5px;color:var(--ink);font-weight:500}
+.savet .sc{font-family:var(--mono);font-size:10px;color:var(--faint)}
+/* self modal */
+.insights{display:flex;flex-direction:column;gap:11px;margin-bottom:20px}
+.ins{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 15px}
+body.work .ins{background:#3d372f}
+.ins .ic{flex:none;width:30px;height:30px;border-radius:9px;background:var(--accsoft);color:var(--terra);display:grid;place-items:center;font-size:15px;margin-top:1px}
+.ins .tx{font-size:13.5px;color:var(--dim);line-height:1.5}.ins .tx b{color:var(--ink);font-weight:600}
+.selfquote{background:var(--accsoft);border-radius:16px;padding:18px;margin-bottom:18px}
+.selfquote .lab{font-family:var(--mono);font-size:10px;letter-spacing:.03em;text-transform:uppercase;color:var(--terra-deep);font-weight:500;margin-bottom:9px}
+.selfquote .q{font-family:var(--mono);font-size:12px;line-height:1.8;color:var(--dim);white-space:pre-wrap}
+.selfquote .q .k{color:var(--terra-deep);font-weight:700}
+.selfempty{font-size:13px;color:var(--faint);line-height:1.6;font-style:italic}
+details.tech{border-top:1px solid var(--line);margin-top:6px;padding-top:14px}
+details.tech summary{list-style:none;cursor:pointer;font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--faint)}
+details.tech summary::-webkit-details-marker{display:none}
+details.tech summary:before{content:'▸ ';color:var(--terra)} details.tech[open] summary:before{content:'▾ '}
+.techgrid{margin-top:14px;display:flex;flex-direction:column;gap:14px}
+.tsec h4{font-family:var(--mono);font-size:10px;letter-spacing:.02em;text-transform:uppercase;color:var(--faint);font-weight:500;margin:0 0 9px}
+.pool{display:flex;gap:3px;margin-bottom:8px}
+.pool i{flex:1;height:20px;border-radius:4px;background:rgba(43,38,34,.06);border:1px solid var(--line)}
+body.work .pool i{background:rgba(255,255,255,.06)}
+.pool i.kur{background:var(--terra-soft);border-color:var(--terra)}.pool i.gen{background:var(--terra);border-color:var(--terra)}
+.pool i.done{background:transparent;border-style:dashed;opacity:.4}
+.poolleg{display:flex;gap:14px;font-family:var(--mono);font-size:10px;color:var(--faint);flex-wrap:wrap}
+.poolleg span{display:flex;align-items:center;gap:5px}.poolleg b{width:9px;height:9px;border-radius:3px;display:inline-block}
+.costrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.costc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+body.work .costc{background:#3d372f}
+.costc .cl{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
+.costc .cv{font-family:var(--mono);font-weight:700;font-size:17px;color:var(--terra)}
+.costc .cs{font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-top:2px}
+.log{display:flex;flex-direction:column;gap:6px;max-height:130px;overflow:auto}
+.li{display:flex;gap:8px;align-items:flex-start;font-size:11.5px;color:var(--dim);line-height:1.45;opacity:0;transform:translateY(4px);animation:fin .28s forwards}
+@keyframes fin{to{opacity:1;transform:none}}
+.li .ic{width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-size:9px;flex:none;font-weight:700;margin-top:1px}
+.li.like .ic{background:var(--accsoft);color:var(--like)}.li.skip .ic{background:rgba(198,80,56,.16);color:var(--nope)}
+.li.save .ic{background:rgba(201,138,62,.18);color:var(--save)}.li.sys .ic{background:var(--line);color:var(--dim)}
+.li .tx{min-width:0}
+.ppbody{font-family:var(--mono);font-size:10px;line-height:1.6;color:var(--faint);white-space:pre-wrap;max-height:200px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+body.work .ppbody{background:#3d372f}.ppbody b{color:var(--terra);font-weight:400}
+.spin{display:inline-block;width:11px;height:11px;border:2px solid var(--line);border-top-color:var(--terra);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-1px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.tbtn{font-size:12px;font-weight:600;color:var(--dim);background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 15px}
+body.work .tbtn{background:#3d372f}.tbtn:hover{color:var(--ink);border-color:var(--terra)}
+.wfootrow{display:flex;justify-content:center;margin-top:20px}
+/* Profil-Steuerung */
+.ctlbox{background:#fff;border:1px solid var(--line);border-radius:16px;padding:6px 15px;margin-bottom:18px}
+body.work .ctlbox{background:#3d372f}
+.ctlrow{display:flex;align-items:center;gap:14px;padding:13px 0}
+.ctlrow+.ctlrow{border-top:1px solid var(--line)}
+.ctltx{flex:1}
+.ctltx b{display:block;font-size:14px;color:var(--ink);font-weight:600}
+.ctltx span{display:block;font-size:11.5px;color:var(--faint);line-height:1.4;margin-top:2px}
+.switch{flex:none;width:46px;height:27px;border-radius:999px;border:0;background:var(--line);position:relative;transition:.2s;cursor:pointer}
+.switch span{position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch.on{background:var(--terra)}
+.switch.on span{left:22px}
+.pfedit{width:100%;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px;color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;outline:none;resize:none;transition:.15s}
+body.work .pfedit{background:var(--panel);color:var(--ink)}
+.pfedit:focus{border-color:var(--terra)}
+.pfworte{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}
+.wchip{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;background:#fff;border:1px solid var(--line);color:var(--terra-deep);border-radius:999px;padding:4px 10px}
+.wchip b{cursor:pointer;opacity:.7;font-weight:700}.wchip b:hover{opacity:1}
+#pfAdd{width:90px;background:transparent;border:1px dashed var(--line);border-radius:999px;padding:4px 10px;font-size:11px;color:var(--dim);outline:none;font-family:var(--mono)}
+.privrow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.linkbtn{background:none;border:0;color:var(--faint);font-size:12.5px;font-weight:600;text-decoration:underline;cursor:pointer}
+.linkbtn:hover{color:var(--dim)}
+.dangerbtn{background:none;border:1px solid rgba(198,80,56,.4);color:var(--nope);font-size:12.5px;font-weight:600;border-radius:999px;padding:8px 15px;cursor:pointer;transition:.14s}
+.dangerbtn:hover{background:rgba(198,80,56,.1)}
+.privtext{font-size:13px;line-height:1.65;color:var(--dim)}
+.privtext h3{font-size:13px;color:var(--ink);font-weight:700;margin:16px 0 6px}
+.privtext h3:first-child{margin-top:0}
+.privtext b{color:var(--ink)}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--char);color:#fff;font-size:13px;font-weight:500;padding:12px 20px;border-radius:999px;box-shadow:0 12px 30px -10px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.28s;z-index:60;display:flex;align-items:center;gap:12px}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.toastbtn{background:var(--terra);color:#fff;border:0;border-radius:999px;padding:6px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.toastbtn:hover{background:var(--terra-deep)}
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+  <header class="top"><div class="logo">CONVOVI<small>frag-o-mat</small></div></header>
+
+  <!-- ═══ KALIBRIERUNG: INTRO ═══ -->
+  <section class="screen" id="calibIntro">
+    <div class="picto">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 12h22a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H18l-7 5v-5H8a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3z"/>
+        <path d="M38 20l1.6 3.8L43.4 25.4 39.6 27 38 30.8 36.4 27 32.6 25.4 36.4 23.8z" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="modetag mode1" style="display:inline-block;margin-bottom:14px">◐ Modus 1 · Kennenlernen</div>
+    <h1>Hi, schön dich<br>kennenzulernen</h1>
+    <p>Zuerst <b>10 kurze Aussagen über dich</b> — swipe rechts für „stimmt", links für „stimmt nicht". Danach startet <b>Modus 2</b> mit Fragen für deine echten Gespräche, zugeschnitten auf dich.</p>
+    <div class="steps" id="introSteps"></div>
+    <button class="bigbtn" id="calibStart">Los geht's</button>
+    <div class="mini">Kein Anmelden, keine Formulare. Nur Fragen.</div>
+  </section>
+
+  <!-- ═══ KALIBRIERUNG: ABSCHLUSS ═══ -->
+  <section class="screen hidden" id="calibDone">
+    <div class="picto">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="24" cy="24" r="18"/><path d="M16 24.5l5.5 5.5L33 18"/>
+      </svg>
+    </div>
+    <h1>Geschafft —<br>los geht's</h1>
+    <p>Modus 1 ist durch. Jetzt kommt <b>Modus 2: Fragen für deine Gespräche</b> — auf dich zugeschnitten, und mit jedem Swipe besser.</p>
+    <div class="modeswitch">
+      <div class="ms done"><span class="msn">◐</span> Modus 1 · Kennenlernen
+        <span class="mscheck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span></div>
+      <div class="msarrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></div>
+      <div class="ms next"><span class="msn">◑</span> Modus 2 · Für deine Gespräche</div>
+    </div>
+    <button class="bigbtn" id="calibGo">Los geht's</button>
+  </section>
+
+  <!-- ═══ HAUPT-APP ═══ -->
+  <div class="hidden" id="main">
+    <div class="phone">
+      <!-- top bar (nur Für dich) -->
+      <div class="pbar" id="pbarMain">
+        <span class="who modetag mode2" id="timeLab"></span>        <div class="picons">
+          <button class="iconbtn" id="btnSelf" title="Was Convovi über dich lernt">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 4.6L18.5 8.5 13.9 10.4 12 15l-1.9-4.6L5.5 8.5 10.1 6.6z"/><path d="M18.5 14l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z"/></svg>
+          </button>
+        </div>
+      </div>
+      <!-- calibration bar (nur während Kalibrierung) -->
+      <div class="calibbar hidden" id="calibBar">
+        <div class="cl"><span class="modetag mode1">◐ Modus 1 · Kennenlernen</span><span><b id="calibNow">1</b> / 10</span></div>
+        <div class="track"><i id="calibFill" style="width:0%"></i></div>
+      </div>
+
+      <div class="viewbody">
+        <!-- FÜR DICH -->
+        <div id="viewForYou">
+          <div class="deck" id="deck"></div>
+          <div class="caliblabels hidden" id="calibLabels">
+            <div class="cllab" id="clNo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg><span>Stimme nicht zu</span></div>
+            <div class="cllab" id="clYes"><span>Stimme zu</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+          <div class="acts" id="actsMain">
+            <div class="actwrap" id="wN"><button class="act n" id="bN" title="Nö"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><span class="actlab">Nö</span></div>
+            <div class="actwrap" id="wS"><button class="act s" id="bS" title="Merken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h11a1 1 0 0 1 1 1v15l-6.5-3.2L5 20V5a1 1 0 0 1 1-1z"/></svg></button><span class="actlab">Merken</span></div>
+            <div class="actwrap" id="wY"><button class="act y" id="bY" title="Mag ich"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21l-1.5-1.4C5.4 15 2 11.9 2 8.2 2 5.4 4.2 3.3 7 3.3c1.6 0 3.1.7 4 1.9.9-1.2 2.4-1.9 4-1.9 2.8 0 5 2.1 5 4.9 0 3.7-3.4 6.8-8.5 11.4L12 21z"/></svg></button><span class="actlab">Mag ich</span></div>
+          </div>
+        </div>
+        <!-- VIDEOS -->
+        <div id="viewVideos" class="hidden"></div>
+        <!-- BIBLIOTHEK -->
+        <div id="viewLibrary" class="hidden"></div>
+      </div>
+
+      <!-- BOTTOM NAV -->
+      <div class="bnav" id="bnav">
+        <button data-view="foryou" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5 10.1 7.6z"/><path d="M18 15l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z"/></svg>Inspiration</button>
+        <button data-view="videos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.5v5l4-2.5z" fill="currentColor" stroke="none"/></svg>Björns Fragen</button>
+        <button data-view="library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h11a1 1 0 0 1 1 1v15l-6.5-3.2L5 20V5a1 1 0 0 1 1-1z"/></svg><span class="navlab">Meine Fragen<span class="cnt hidden" id="navLibCnt">0</span></span></button>
+      </div>
+    </div>
+    <p class="note" id="mainNote">Karte ziehen oder tippen · <kbd>←</kbd> Nö &nbsp;<kbd>↑</kbd> Merken &nbsp;<kbd>→</kbd> Mag ich</p>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="backdrop" id="mdSelf"><div class="sheet">
+  <div class="shead"><div><h2>So tickst du</h2><p id="selfSub">Was Convovi beim Swipen über dich lernt.</p></div><button class="xbtn" data-close="mdSelf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="sbody" id="selfBody"></div></div></div>
+
+<div class="backdrop" id="mdSave"><div class="sheet">
+  <div class="shead"><div><h2>Wohin speichern?</h2><p id="saveSub">Frage zu einer Liste hinzufügen.</p></div><button class="xbtn" data-close="mdSave"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="sbody" id="saveBody"></div></div></div>
+
+<div class="backdrop" id="mdPerson"><div class="sheet">
+  <div class="shead"><div><h2 id="personTitle">Für wen ist diese Frage?</h2><p id="personSub">Frage für eine Person merken.</p></div><button class="xbtn" data-close="mdPerson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="sbody" id="personBody"></div></div></div>
+
+<div class="backdrop" id="mdShare"><div class="sheet">
+  <div class="shead"><div><h2>Frage teilen</h2><p id="shareSub">Verschick sie an jemanden.</p></div><button class="xbtn" data-close="mdShare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="sbody" id="shareBody"></div></div></div>
+
+<div class="backdrop" id="mdPriv"><div class="sheet">
+  <div class="shead"><div><h2>Datenschutz</h2><p>Kurz &amp; ehrlich — Stand MVP.</p></div><button class="xbtn" data-close="mdPriv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="sbody"><div class="privtext">
+    <h3>Wer verantwortlich ist</h3>[Björn / Convovi · vollständige Adresse + Kontakt eintragen]. Fragen zum Datenschutz: [E-Mail].
+    <h3>Welche Daten wir verarbeiten</h3>Deine Antworten aus dem Kennenlernen (10 Fragen), deine Swipes (mag ich / nö / merken), von dir gespeicherte Fragen, angelegte Personen und Erinnerungen. Wenn du dich anmeldest: E-Mail-Adresse.
+    <h3>Wozu</h3>Um dir passende Gesprächsfragen zu zeigen und dein Erlebnis zu personalisieren. Rechtsgrundlage ist die Erfüllung unseres Nutzungsvertrags (Art. 6 Abs. 1 b DSGVO) und deine Einwilligung für die Personalisierung, die du jederzeit widerrufen kannst.
+    <h3>KI-Verarbeitung</h3>Für generierte Fragen senden wir deine Vorlieben (nicht deinen Namen) an unseren KI-Dienstleister Anthropic. Du kannst die KI-Generierung in deinem Profil ausschalten.
+    <h3>Dienstleister</h3>Supabase (Datenbank, EU-Region), Vercel (Hosting), Anthropic (KI). Mit allen bestehen Auftragsverarbeitungsverträge.
+    <h3>Speicherdauer</h3>Solange dein Profil besteht. Du kannst es jederzeit in „So tickst du" → „Profil löschen" vollständig entfernen.
+    <h3>Deine Rechte</h3>Auskunft, Berichtigung, Löschung, Datenübertragbarkeit, Widerspruch und Beschwerde bei einer Aufsichtsbehörde. Melde dich dafür bei [E-Mail].
+    <p style="margin-top:16px;font-size:11px;color:var(--faint)">Dies ist eine MVP-Kurzfassung und ersetzt keine anwaltlich geprüfte Datenschutzerklärung.</p>
+  </div></div></div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CURATED = [{"text": "Was ist die beste berufliche Veranstaltung (Messe, Party), auf der du je warst?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Was bedeutet Erfolg für dich persönlich?", "ctx": "work", "tone": "warm", "themes": ["werte"], "effort": "quick"}, {"text": "Welches Brettspiel zerstört bei dir regelmäßig Freundschaften?", "ctx": "private", "tone": "verspielt", "themes": ["beziehung"], "effort": "quick"}, {"text": "Was war die schlechteste Frisur, die du je hattest?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Was war dein letzter richtig guter Moment?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Welche Art Tag macht dir ein gutes Gefühl?", "ctx": "private", "tone": "warm", "themes": ["gefuehle", "alltag"], "effort": "quick"}, {"text": "Was ist eine Sache, auf die du insgeheim stolz bist — die kaum jemand kennt?", "ctx": "private", "tone": "herausfordernd", "themes": ["selbstbild"], "effort": "medium"}, {"text": "Was ist dein liebstes Geräusch?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Welches \"Büro-Phänomen\" (z.B. leere Kaffeekannen) fasziniert oder amüsiert dich?", "ctx": "work", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Wobei bräuchtest du einfach mal jemanden, der da ist?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Was ist dein größter innerer Widerspruch?", "ctx": "private", "tone": "herausfordernd", "themes": ["alltag"], "effort": "quick"}, {"text": "Was ist ein Geruch oder ein Geräusch, das dich sofort in Sicherheit wiegt?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Wenn du morgen mit einem Skill aufwachen könntest — welcher wäre es und warum?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Welcher Wert hat dein Handeln heute am meisten geleitet?", "ctx": "private", "tone": "warm", "themes": ["werte", "alltag"], "effort": "medium"}, {"text": "Welches Emoji beschreibt deine Arbeitswoche bisher?", "ctx": "work", "tone": "verspielt", "themes": ["alltag"], "effort": "story"}, {"text": "Was würdest du gerne besser verstehen — in dir selbst?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Was braucht ein Tag, damit du energiegeladen aus ihm rausgehst?", "ctx": "private", "tone": "warm", "themes": ["gefuehle", "alltag"], "effort": "medium"}, {"text": "Wann hast du das letzte Mal gespürt, dass wir als Team eine echte Einheit waren?", "ctx": "work", "tone": "warm", "themes": ["beziehung"], "effort": "medium"}, {"text": "Wenn du ein Instrument sein müsstest, welches wärst du?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Welche berufliche Niederlage trägst du noch mit dir?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Wann hast du dich zuletzt richtig stolz auf deine Arbeit gefühlt?", "ctx": "work", "tone": "warm", "themes": ["selbstbild", "gefuehle"], "effort": "medium"}, {"text": "Was macht dich als Freund:in eigentlich richtig gut?", "ctx": "private", "tone": "warm", "themes": ["beziehung"], "effort": "quick"}, {"text": "Welche Entscheidung würdest du heute sofort rückgängig machen?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Was ist das Peinlichste, das dir im Supermarkt passiert ist?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Was ist dein Go-To-Witz, wenn es still ist?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "quick"}, {"text": "Was ist dein wichtigstes Überlebens-Utensil auf deinem Schreibtisch?", "ctx": "work", "tone": "warm", "themes": ["werte"], "effort": "quick"}, {"text": "Wann hast du das letzte Mal Tränen (vor Freude oder Frust) im Job unterdrückt?", "ctx": "work", "tone": "warm", "themes": ["gefuehle"], "effort": "medium"}, {"text": "Welche Art von Feedback hat deine Arbeitsweise nachhaltig verändert?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Aus welchem Kapitel deiner Geschichte war der Kampf der härteste?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "story"}, {"text": "Was ist eine Eigenschaft, die du an anderen bewunderst, aber bei dir selbst versteckst?", "ctx": "private", "tone": "herausfordernd", "themes": ["selbstbild"], "effort": "medium"}, {"text": "Welche Gewohnheit macht dich heimlich glücklicher, als du zugeben würdest?", "ctx": "private", "tone": "herausfordernd", "themes": ["gefuehle"], "effort": "medium"}, {"text": "Was war ein Moment in unserem gemeinsamen Leben, den du nie vergessen wirst?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Welches Wort kannst du absolut nicht leiden?", "ctx": "private", "tone": "warm", "themes": ["selbstbild"], "effort": "quick"}, {"text": "Wenn du eine Superkraft für nur 24 Stunden hättest — welche würdest du nehmen?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Welchen Moment aus unserer gemeinsamen Zeit würdest du gerne nochmal erleben?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Welche Stimmung hattest du heute und welches Wetter wäre sie?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Wenn du eine Erinnerung nochmal erleben könntest – welche wäre es?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Wer denkt, dass du ihm eine Entscheidung schuldest — obwohl er dir eine schuldet?", "ctx": "private", "tone": "herausfordernd", "themes": ["alltag"], "effort": "medium"}, {"text": "Was brauchst du, um nach der Arbeit abzuschalten?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Wenn du ein Eis-Aroma wärst, welches?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "quick"}, {"text": "Wenn du heute Abend die Welt verlassen müsstest: Was wäre das Wichtigste, das du hinterlässt?", "ctx": "private", "tone": "verspielt", "themes": ["werte", "alltag"], "effort": "medium"}, {"text": "Was ist eine Fähigkeit, die du bei anderen bewunderst, die du aber selbst nie beherrschen wirst?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Welche Angst hat dich zuletzt überrascht?", "ctx": "private", "tone": "warm", "themes": ["gefuehle"], "effort": "quick"}, {"text": "Was war der ungewöhnlichste Ort, von dem aus du je gearbeitet hast?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Welche Aufgabe schiebst du immer bis zum Schluss auf?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Welche Stimmung hattest du heute im Büro und welches Wetter wäre sie?", "ctx": "work", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Welchen Rat von früher würdest du heute ignorieren?", "ctx": "private", "tone": "warm", "themes": ["vergangenheit", "alltag"], "effort": "quick"}, {"text": "Was ist eine Wahrheit über dich, die du selten aussprichst?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Welchen Urlaub würdest du gerne nochmal gemeinsam erleben?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "quick"}, {"text": "Bist du eher Typ \"Frühaufsteher\" oder \"Nachteule\" im Büro?", "ctx": "work", "tone": "warm", "themes": ["selbstbild"], "effort": "medium"}, {"text": "Gibt es eine Situation im Job, bei der du dich völlig unterlegen gefühlt hast?", "ctx": "work", "tone": "warm", "themes": ["gefuehle"], "effort": "medium"}, {"text": "Wenn du eine Botschaft an alle Menschen senden könntest, die dich je geliebt haben – was wäre sie?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Welches Hintergrundbild hast du gerade auf deinem Laptop?", "ctx": "work", "tone": "verspielt", "themes": ["alltag"], "effort": "quick"}, {"text": "Was ist dein \"Geheimtrick\", um komplexe Themen einfach zu erklären?", "ctx": "work", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Was wäre dein Tag heute in einem Satz?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "quick"}, {"text": "Wobei verlierst du bei der Arbeit am meisten Energie?", "ctx": "work", "tone": "warm", "themes": ["gefuehle"], "effort": "medium"}, {"text": "Wenn du eine neue Tradition in unserem Unternehmen einführen könntest, welche wäre das?", "ctx": "work", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Welche kleine Geste bleibt dir lange in Erinnerung?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Wenn wir als Team eine Expedition in die Wildnis machen würden: Welche Rolle hättest du?", "ctx": "work", "tone": "warm", "themes": ["beziehung"], "effort": "medium"}, {"text": "Was würdest du gerne öfter spontan tun?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Bei welchem Thema wird dein Ego getriggert?", "ctx": "private", "tone": "herausfordernd", "themes": ["alltag"], "effort": "quick"}, {"text": "Was hat dich heute kurz lächeln lassen, obwohl es stressig war?", "ctx": "private", "tone": "warm", "themes": ["gefuehle", "alltag"], "effort": "medium"}, {"text": "Was ist deine heimliche Strategie, um mit extremem Stress umzugehen, von der niemand weiß?", "ctx": "work", "tone": "herausfordernd", "themes": ["gefuehle"], "effort": "medium"}, {"text": "Kaffee oder Tee – was hält dich im Büro am Leben?", "ctx": "work", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Was hält dich beruflich aktuell zurück?", "ctx": "work", "tone": "warm", "themes": ["vergangenheit"], "effort": "quick"}, {"text": "Was war dein bisheriger \"Peak\" des Monats?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Welche Begegnung mit einem Fremden wirst du nie vergessen?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Was hättest du dem jüngeren Ich gerne früher gesagt?", "ctx": "private", "tone": "warm", "themes": ["vergangenheit"], "effort": "medium"}, {"text": "Welcher Moment mit uns hat dich als Kind am meisten geprägt?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Wenn du eine Zeitmaschine hättest: Würdest du 100 Jahre vor oder zurück?", "ctx": "private", "tone": "verspielt", "themes": ["vergangenheit"], "effort": "medium"}, {"text": "Was ist deine Go-to-Ausrede, wenn du keine Lust auf ein Treffen hast?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Welche berufliche Entscheidung bereust du heute nicht mehr?", "ctx": "work", "tone": "herausfordernd", "themes": ["alltag"], "effort": "quick"}, {"text": "Welchen fiktiven Ort würdest du gerne mal besuchen?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Was war eine schwere Phase, aus der du stärker rausgegangen bist?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Was war der letzte Moment, wo du gedacht hast: das will ich nicht vergessen?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Was war dein merkwürdigstes Erlebnis in einer Videokonferenz?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Welche Eigenschaft an deinem \"Lieblings-Kollegen\" (muss nicht hier sein) schätzt du am meisten?", "ctx": "work", "tone": "verspielt", "themes": ["beziehung", "selbstbild"], "effort": "medium"}, {"text": "Bist du von Problemen umgeben — oder selbst das Problem?", "ctx": "private", "tone": "warm", "themes": ["selbstbild"], "effort": "medium"}, {"text": "Was fordert dich gerade am meisten heraus?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Wo merkst du, dass du dich selbst sabotierst?", "ctx": "private", "tone": "herausfordernd", "themes": ["alltag"], "effort": "quick"}, {"text": "Was ist ein kleines Glück, das du fast übersehen hättest?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Was ist die eine Sache, die ich an dir im Arbeitsalltag falsch einschätze?", "ctx": "work", "tone": "herausfordernd", "themes": ["selbstbild", "alltag"], "effort": "medium"}, {"text": "Welchen Teil deiner Person versteckst du manchmal, um andere nicht zu überfordern?", "ctx": "private", "tone": "herausfordernd", "themes": ["alltag"], "effort": "medium"}, {"text": "Wenn du unser Team-Motto auf ein T-Shirt drucken müsstest – was würde darauf stehen?", "ctx": "work", "tone": "verspielt", "themes": ["beziehung"], "effort": "medium"}, {"text": "Wenn du eine Woche lang nur mit einer einzigen Person reden dürftest — wen würdest du wählen?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Wofür in deinem Arbeitsalltag hättest du gerne eine Fernbedienung mit \"Mute\"- oder \"Fast-Forward\"-Taste?", "ctx": "work", "tone": "warm", "themes": ["gefuehle", "alltag"], "effort": "medium"}, {"text": "Was würdest du tun, wenn Geld und Status für ein Jahr keine Rolle spielen würden?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Wenn du ein Maskottchen hättest, welches Tier wäre es heute?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Welcher Satz begleitet dich schon lange?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Welcher fachliche Rat eines Kollegen hat dir mal so richtig den Hintern gerettet?", "ctx": "work", "tone": "warm", "themes": ["beziehung"], "effort": "medium"}, {"text": "Was ist eine Sache an unserer Arbeitsweise, die wir sofort digitalisieren (oder abschaffen) sollten?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Worauf freust du dich gerade?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Welches Office-Gadget (analog oder digital) hat dein Leben am meisten verändert?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Wenn Geld keine Rolle spielen würde: Würdest du morgen noch hier erscheinen?", "ctx": "work", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Gab es einen Moment, in dem du dich von mir oder dem Team im Stich gelassen gefühlt hast?", "ctx": "work", "tone": "warm", "themes": ["beziehung", "gefuehle"], "effort": "story"}, {"text": "Was ist das Krasseste, das du je für einen Freund getan hast?", "ctx": "private", "tone": "warm", "themes": ["beziehung"], "effort": "medium"}, {"text": "Wäre dein jüngeres Ich stolz auf die Person, die du heute bist?", "ctx": "private", "tone": "verspielt", "themes": ["selbstbild", "vergangenheit", "alltag"], "effort": "medium"}, {"text": "Wofür hättest du heute gerne mehr Zeit gehabt?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Wenn dein Tag ein Getränk wäre — welches?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "quick"}, {"text": "Welche Entscheidung steht gerade an, die du vor dir herschiebst?", "ctx": "private", "tone": "herausfordernd", "themes": ["alltag"], "effort": "medium"}, {"text": "Was ist eine Sache, auf die du im Job insgeheim stolz bist?", "ctx": "work", "tone": "herausfordernd", "themes": ["selbstbild"], "effort": "medium"}, {"text": "Was war die beeindruckendste Visitenkarte oder Website, die du je gesehen hast?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Was brauchst du, um dich im Job wirklich zu öffnen?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Was ist dein \"Hidden Talent\", das im Job mehr Raum verdient hätte?", "ctx": "work", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Wenn du eine Woche lang nur ein einziges Gericht essen dürftest?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "In welchem Film-Universum würdest du gerne leben?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "quick"}, {"text": "Welchen Beruf hättest du gerne, wenn Geld egal wäre?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Welchen Teil deiner Persönlichkeit versteckst du oft, um andere nicht zu überfordern?", "ctx": "private", "tone": "herausfordernd", "themes": ["selbstbild"], "effort": "medium"}, {"text": "Was ist dein ehrlichster Gedanke über unsere Führungsebene?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Welche Art Gespräch gibt dir sofort Energie?", "ctx": "private", "tone": "warm", "themes": ["gefuehle"], "effort": "quick"}, {"text": "Was machst du im Feierabend, um wirklich runterzukommen?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Was ist eine Wahrheit über dich, die fast niemandem auffällt?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Welche deiner Grenzen schützt dich gerade am meisten?", "ctx": "private", "tone": "herausfordernd", "themes": ["alltag"], "effort": "quick"}, {"text": "Bei welchen Themen weinst du — wo andere es nicht tun?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Welchen Input gibst du dir gerade?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Was macht für dich ein exzellentes Team aus?", "ctx": "work", "tone": "warm", "themes": ["beziehung"], "effort": "quick"}, {"text": "Wenn du die Kaffeemaschine programmieren könntest – was sollte sie noch können?", "ctx": "work", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Was war der lustigste Vertippter in einer E-Mail?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Wie unterscheidet sich dein berufliches und privates Ich?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Was magst du an uns als Freunde — das du wahrscheinlich nie laut sagst?", "ctx": "private", "tone": "herausfordernd", "themes": ["beziehung"], "effort": "medium"}, {"text": "Wenn wir beide morgen kündigen und ein Startup gründen würden: Was wäre unsere verrückteste Idee?", "ctx": "work", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Wenn du heute kündigen würdest: Was würdest du am meisten vermissen?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Wenn wir eine \"Wall of Fame\" für gescheiterte Ideen hätten: Welches Projekt von dir stünde ganz oben?", "ctx": "work", "tone": "herausfordernd", "themes": ["alltag"], "effort": "medium"}, {"text": "Was wolltest du schon immer mal fragen, hast dich aber nie getraut?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Star Wars, Herr der Ringe oder Harry Potter — du darfst dich nur für eins entscheiden?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Welche Art von Nähe tut dir gut?", "ctx": "private", "tone": "warm", "themes": ["beziehung"], "effort": "quick"}, {"text": "Was ist die eine Sache, die du in Meetings tust, um nicht die Geduld zu verlieren?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Wenn du eine Sache an deiner Erziehung ändern könntest, was wäre das?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Welchen Kollegen findest du heimlich anstrengend, traust dich aber nicht zu sagen?", "ctx": "work", "tone": "herausfordernd", "themes": ["beziehung"], "effort": "medium"}, {"text": "Welches Thema verteidigst du bis zum letzten Atemzug?", "ctx": "private", "tone": "herausfordernd", "themes": ["alltag"], "effort": "quick"}, {"text": "Was würdest du tun, wenn du wüsstest, dass du nicht scheitern kannst?", "ctx": "private", "tone": "herausfordernd", "themes": ["alltag"], "effort": "medium"}, {"text": "Was ist dein Lieblings-Schimpfwort?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "quick"}, {"text": "Welchen Song kannst du wortwörtlich auswendig?", "ctx": "private", "tone": "verspielt", "themes": ["selbstbild", "alltag"], "effort": "quick"}, {"text": "Was ist das Mutigste, das du im Urlaub je gemacht hast?", "ctx": "private", "tone": "verspielt", "themes": ["gefuehle"], "effort": "medium"}, {"text": "Welcher Teil deines Jobs fühlt sich für dich wie reine Schauspielerei an?", "ctx": "work", "tone": "verspielt", "themes": ["gefuehle"], "effort": "medium"}, {"text": "Was ist der \"Running Gag\" zwischen uns, den niemand sonst im Büro versteht?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Welche berufliche Herausforderung hat dich in den letzten sechs Monaten am meisten wachsen lassen?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Was ist das Peinlichste, was dir je passiert ist?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Welche Aktivität gibt dir sofort gute Laune?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Welchen fiktiven Charakter hättest du gerne als Mentor?", "ctx": "work", "tone": "warm", "themes": ["selbstbild"], "effort": "quick"}, {"text": "Wenn du für einen Tag die Rolle eines Kollegen übernehmen müsstest: Wer wäre es und warum?", "ctx": "work", "tone": "verspielt", "themes": ["beziehung", "alltag"], "effort": "medium"}, {"text": "Worin bist du richtig gut — das kaum jemand von dir weiß?", "ctx": "private", "tone": "herausfordernd", "themes": ["selbstbild"], "effort": "medium"}, {"text": "Was wäre eine Sache, die du gerne öfter ehrlich sagen würdest?", "ctx": "private", "tone": "herausfordernd", "themes": ["alltag"], "effort": "medium"}, {"text": "Wenn du eine Cartoon-Figur wärst, wer wärst du?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "quick"}, {"text": "Was ist eine Sache, die du gerne öfter ehrlich sagen würdest?", "ctx": "private", "tone": "herausfordernd", "themes": ["alltag"], "effort": "medium"}, {"text": "Welcher Song ist dein heimlicher Favorit beim Duschen?", "ctx": "private", "tone": "herausfordernd", "themes": ["alltag"], "effort": "quick"}, {"text": "Was war die wichtigste Lektion, die du durch einen Konflikt im Team gelernt hast?", "ctx": "work", "tone": "herausfordernd", "themes": ["beziehung", "werte"], "effort": "medium"}, {"text": "Wenn du heute eine Sache an deinem Umgang mit dir selbst ändern könntest, welche wäre das?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Was kannst du mir gerade wirklich empfehlen?", "ctx": "private", "tone": "warm", "themes": ["selbstbild"], "effort": "quick"}, {"text": "Was ist etwas, das du selten teilst, aber oft fühlst?", "ctx": "private", "tone": "warm", "themes": ["gefuehle"], "effort": "medium"}, {"text": "Was ist ein Kompliment, das du dir heute selbst machen würdest?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Was ist die seltsamste Essenskombination, die du wirklich magst?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Was ist das Verrückteste, das dir je passiert ist?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Welchen Teil meiner Arbeitsweise findest du manchmal anstrengend, traust dich aber nicht zu sagen?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Was sind typische Sprichwörter, die deine Eltern immer gesagt haben?", "ctx": "private", "tone": "warm", "themes": ["familie"], "effort": "medium"}, {"text": "Welchen Charakterzug bewunderst du an anderen — den du dir selbst manchmal wünschst?", "ctx": "private", "tone": "warm", "themes": ["selbstbild", "zukunft"], "effort": "medium"}, {"text": "Was ist etwas, das du heimlich liebst?", "ctx": "private", "tone": "herausfordernd", "themes": ["alltag"], "effort": "quick"}, {"text": "Wenn du die Macht hättest, eine einzige Regel in unserer Firma abzuschaffen: Welche wäre das?", "ctx": "work", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Was hat dich heute Kraft gekostet, obwohl es klein wirkte?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Wann hast du das letzte Mal im Job \"Stopp\" gesagt, um dich selbst zu schützen?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Was ist das größte Opfer, das du bisher für deine Karriere gebracht hast?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Wer hat dich beruflich am meisten inspiriert?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Was überfordert dich in Freundschaften manchmal?", "ctx": "private", "tone": "herausfordernd", "themes": ["beziehung"], "effort": "quick"}, {"text": "Was war heute eine kleine Entscheidung, die sich richtig angefühlt hat?", "ctx": "private", "tone": "warm", "themes": ["gefuehle", "alltag"], "effort": "medium"}, {"text": "Welches Gemüse sollte deiner Meinung nach verboten werden?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "quick"}, {"text": "Was ist dein Go-To-Snack während eines langen Meetings?", "ctx": "work", "tone": "verspielt", "themes": ["alltag"], "effort": "quick"}, {"text": "Was ist eine Sache, die dich im Job antreibt, die nichts mit Geld zu tun hat?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Was würdest du tun, wenn du einen Tag keine Erwartungen spüren würdest?", "ctx": "private", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Wen hast du zuletzt geghostet?", "ctx": "private", "tone": "herausfordernd", "themes": ["alltag"], "effort": "quick"}, {"text": "Welche \"unbequeme Wahrheit\" über unsere Branche sollten wir öfter aussprechen?", "ctx": "work", "tone": "herausfordernd", "themes": ["alltag"], "effort": "medium"}, {"text": "Wenn unser Team eine Band wäre, wer würde das Schlagzeug spielen?", "ctx": "work", "tone": "verspielt", "themes": ["beziehung"], "effort": "medium"}, {"text": "Was ist dein persönliches Motto für stressige Montage?", "ctx": "work", "tone": "verspielt", "themes": ["gefuehle"], "effort": "quick"}, {"text": "Welche \"Superkraft\" bringst du ins Team, die nicht in deinem Lebenslauf steht?", "ctx": "work", "tone": "verspielt", "themes": ["beziehung"], "effort": "medium"}, {"text": "Gibt es einen Moment im Job, für den du dich heute schämst?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Wann hast du das letzte Mal bei der Arbeit gelogen, um dich zu schützen?", "ctx": "work", "tone": "warm", "themes": ["alltag"], "effort": "medium"}, {"text": "Welches fiktive Unternehmen aus Film oder Literatur würde dich als Arbeitgeber reizen?", "ctx": "work", "tone": "verspielt", "themes": ["alltag"], "effort": "medium"}, {"text": "Was ist dein \"Spirit Animal\" am Montagmorgen?", "ctx": "private", "tone": "warm", "themes": ["alltag"], "effort": "quick"}];
+const VIDEOS  = [{"id": "v1", "title": "10 ungewöhnliche Fragen · Teil 1", "tag": "Ungewöhnlich", "qs": ["Was würdest du auf LinkedIn nicht teilen — obwohl es Teil deines Lebenslaufs ist?", "Welche dumme Entscheidung hat sich im Nachhinein als eine der besten erwiesen?", "Was ist deine fragwürdigste Angewohnheit?", "Welchem Account folgst du auf Social Media, den ich nicht kommen sehen würde?", "Was findest du völlig normal — das viele andere nicht normal finden?", "Was würdest du in diesem Moment impulsiv mit 1000€ machen?", "Woran arbeitest du gerade — ohne dass es jemand weiß?", "Bei welchem Thema wird dein Ego getriggert?", "Welches Alter deines Lebens würdest du gerne nochmal wiederholen?", "Was ist das Krasseste, das du je für einen Freund getan hast?"]}, {"id": "v2", "title": "10 ungewöhnliche Fragen · Teil 2", "tag": "Ungewöhnlich", "qs": ["Welchen Satz hättest du mit 16 hören müssen?", "Welche Eigenschaft deiner Eltern hast du ungewollt übernommen?", "Was würdest du nochmal machen — obwohl es eine dumme Idee war?", "Wie würde dein Nachbar dich beschreiben?", "Was ist deine Go-to-Ausrede, wenn du keine Lust auf ein Treffen hast?", "Wen hast du zuletzt geghostet?", "Bei welchen Themen weinst du — wo andere es nicht tun?", "Was ist der schnellste Weg, dein Vertrauen zu verlieren?", "Welches Thema verteidigst du bis zum letzten Atemzug?", "Bist du von Problemen umgeben — oder selbst das Problem?"]}, {"id": "v3", "title": "10 ungewöhnliche Fragen · Teil 3", "tag": "Ungewöhnlich", "qs": ["Was kannst du, das die meisten nicht können?", "Wer denkt, dass du ihm eine Entscheidung schuldest — obwohl er dir eine schuldet?", "Aus welchem Kapitel deiner Geschichte war der Kampf der härteste?", "Was sind Dinge, für die du dich entschuldigst — obwohl du es nicht müsstest?", "Du kannst eins wählen: Glück haben oder Recht haben?", "Was ist deine nutzloseste Begabung?", "Welche Person in deinem Leben bekommt die längsten Sprachnachrichten von dir?", "Star Wars, Herr der Ringe oder Harry Potter — du darfst dich nur für eins entscheiden?", "Was war deine beste und schlechteste Investition der letzten Monate?", "Welches Kompliment sollten Männer sich öfter geben?", "Wenn Geld und Zeit keine Rolle spielen — welches Projekt gehst du an?"]}, {"id": "v4", "title": "Würdest du lieber… · Teil 1", "tag": "Absurd", "qs": ["Würdest du lieber für immer wissen, wann jemand lügt — oder dass niemand jemals weiß wann du lügst?", "Du bekommst eine Superkraft — aber sie funktioniert nur montags zwischen 9 und 12 Uhr. Was wählst du?", "Würdest du lieber jeden Morgen aufwachen und nicht wissen was heute für ein Tag ist — oder immer wissen was der Tag bringt, aber nichts daran ändern können?", "Ein fremder Wissenschaftler bietet dir an: du schläfst ab sofort perfekt — vier Stunden reichen — aber du träumst nie wieder. Nimmst du das?", "Würdest du lieber, dass deine beste Freundin für einen Tag in deinem Kopf mitlesen kann — oder du einen Tag in ihrem?", "Du kannst eine Regel in deinem Freundeskreis einführen die alle befolgen müssen. Welche?", "Würdest du lieber nie wieder im Stau stehen — aber dafür immer den Mittelsitz im Flieger — oder umgekehrt?", "Ein Fremder bietet dir an: du erinnerst dich ab sofort an jeden Namen jeder Person die du je getroffen hast — aber vergisst dafür jeden Inhalt jedes Buches. Deal?", "Würdest du lieber, dass dein Chef für einen Tag dein bester Freund ist — oder dein bester Freund für einen Tag dein Chef?", "Du kannst einmalig in die Zukunft schauen — aber nur in den unspektakulärsten Moment deines Lebens in fünf Jahren. Schaust du rein?"]}, {"id": "v5", "title": "Würdest du lieber… · Teil 2", "tag": "Absurd", "qs": ["Würdest du lieber, dass alle deine WhatsApp-Chats der letzten sechs Monate einmalig öffentlich werden — oder dass du für ein Jahr kein Handy mehr benutzen kannst?", "Ein Fremder bietet dir an: du siehst einmalig den glücklichsten Moment deines zukünftigen Lebens — aber danach weißt du wann er kommt. Schaust du hin?", "Würdest du lieber, dass deine Eltern für eine Woche wissen was du wirklich verdienst — oder was du wirklich über deinen Job denkst?", "Ein Fremder bietet dir an: du bekommst 500.000€ — aber du musst für ein Jahr jeden Morgen deinem gesamten Freundeskreis eine ehrliche Sprachnachricht schicken. Machst du es?", "Würdest du lieber für immer wissen ob jemand dich wirklich mag — oder nur höflich ist?", "Würdest du lieber, dass dein bester Freund für ein Jahr dein Kollege wird — oder dein Chef für ein Jahr dein Mitbewohner?", "Würdest du lieber einmal im Leben für 30 Tage komplett offline sein — mit 100.000€ Belohnung danach — oder online bleiben ohne Belohnung?", "Ein Fremder bietet dir an: du kannst jeden Menschen einmal fragen und bekommst eine ehrliche Antwort — aber die Person weiß danach dass du gefragt hast. Welche Frage stellst du zuerst — und wem?", "Würdest du lieber für immer wissen wie jede Geschichte endet — oder nie wieder gespoilert werden können?", "Wenn du für einen Tag mit jemandem tauschen könntest — nicht um sein Leben zu leben, sondern um die Welt durch seine Augen zu sehen — wen wählst du?"]}, {"id": "v6", "title": "7 Lieblings-Icebreaker", "tag": "Icebreaker", "qs": ["Was war das Beste, das du diese Woche gegessen hast?", "Welchen völlig nutzlosen Fakt weißt du auswendig?", "Wenn du morgen einen Tag frei hättest — ganz ohne Verpflichtungen — was würdest du machen?", "Welchen Song hörst du gerade rauf und runter?", "Was ist eine Sache, die du richtig gut kannst — die kaum jemand weiß?", "Worüber könntest du eine Stunde reden, ohne Luft zu holen?", "Was hat dich diese Woche zum Lachen gebracht?", "Was hast du zuletzt entdeckt, das du weiterempfehlen würdest?", "Was würdest du gerne öfter tun — kommst aber selten dazu?", "Was wünschst du dir, dass mehr Menschen über dich wüssten?"]}, {"id": "v7", "title": "Smalltalk wird Deeptalk", "tag": "Tiefe", "qs": ["Worauf freust du dich, wenn der Feierabend kommt?", "Wobei vergisst du zuverlässig die Zeit?", "Welche Serie oder welches Buch hat dich zuletzt wirklich gepackt?", "Was machst du heute anders als vor zwei Jahren?", "Welche App auf deinem Handy nutzt du viel zu oft?", "Was war deine beste Entscheidung der letzten 6 Monate?", "Welcher Ort fühlt sich für dich an wie nach Hause kommen?", "Was tust du für andere ganz selbstverständlich, obwohl es Energie kostet?", "Welche Eigenschaft an anderen Menschen macht dich sofort sympathisch?", "Welchen Ratschlag würdest du dir selbst von vor fünf Jahren geben?", "Was hat dich diese Woche überrascht — egal wie klein?", "Was läuft gerade besser als erwartet?"]}, {"id": "v8", "title": "8 Fragen an deine besten Freunde", "tag": "Freunde", "qs": ["Was würde dein bester Freund bestellen, wenn ihr zusammen essen geht — ohne die Karte zu sehen?", "Was ist das Lied, das ihn gerade begleitet — oder das er immer wieder hört, wenn's ihm nicht so gut geht?", "Wofür hat er in letzter Zeit richtig Energie — etwas, das ihn gerade antreibt, ohne dass er groß darüber redet?", "Was ist die eine Sache, die er sich gerade wünscht — aber wahrscheinlich nie laut ausspricht?", "Was war der Moment in seinem Leben, der ihn am meisten verändert hat?", "Wovor hat er gerade manchmal Angst — auch wenn er's nach außen nicht zeigt?", "Gibt es etwas, das du ihm schon lange sagen wolltest — aber irgendwie nie der richtige Moment war?"]}, {"id": "v9", "title": "Fragen, die herausfordern", "tag": "Mutig", "qs": ["Gibt es gerade etwas in deinem Leben, das du weiterführst — obwohl du eigentlich weißt, dass es Zeit wäre aufzuhören?", "Wann hast du zuletzt etwas getan, das dich wirklich weiterentwickelt hat — nicht nur beschäftigt?", "Was ist eine Situation in deinem Leben, die du als gegeben akzeptiert hast — obwohl sie eigentlich veränderbar wäre?", "Gibt es jemanden in deinem Leben, dem du mehr Raum gibst als er dir gut tut — und du weißt es eigentlich?", "Was würdest du heute anders entscheiden — wenn du die Meinung anderer komplett rausnimmst?", "Welche Version von dir hast du gerade auf Pause gesetzt — und warum?", "Was brauchst du gerade wirklich — das du bisher noch nicht laut ausgesprochen hast?", "Gibt es etwas, bei dem du dir selbst gegenüber gerade nicht fair bist?", "Was wäre der erste kleine Schritt — bei dem Ding, das du schon lange vor dir herschiebst?", "Was soll in einem Jahr anders sein — und was tust du heute dafür?"]}, {"id": "v10", "title": "Fürs Team & Büro", "tag": "Arbeit", "qs": ["Welche Person hat deinen Berufsweg maßgeblich beeinflusst?", "Wo verlierst du bei deiner Arbeit am meisten Energie?", "Bei welcher Aufgabe spürst du Fokus und Flow?", "Was machst du in Meetings, um nicht die Geduld zu verlieren?", "Was bedeutet Erfolg für dich?", "Was ist eine Sache, die dich im Job antreibt — die nichts mit Geld zu tun hat?", "Wie unterscheidet sich dein berufliches und privates Ich?", "Was machst du im Feierabend, um wirklich runterzukommen?", "Wenn du morgen mit einem Skill aufwachen könntest — welcher wäre es und warum?", "In welchem Moment hast du dich zuletzt richtig wertgeschätzt gefühlt?"]}, {"id": "v11", "title": "Für den Familientisch", "tag": "Familie", "qs": ["Was war dein persönliches Highlight der letzten Monate — egal wie klein?", "Was ist eine Eigenschaft von jemandem in dieser Runde, die du heimlich bewunderst?", "Was hättest du dem jüngeren Ich gerne früher gesagt?", "Was ist eine Familientradition, die du wirklich magst?", "Was war ein Moment in unserem gemeinsamen Leben, den du nie vergessen wirst?", "Was wünschst du dir für uns als Familie in den nächsten Jahren?"]}];
+
+const ROLES=[
+  {k:'partner',l:'Partner:in',ctx:'private'},{k:'close',l:'Enge Freunde',ctx:'private'},
+  {k:'loose',l:'Lockere Freunde',ctx:'private'},{k:'family',l:'Familie',ctx:'private'},
+  {k:'colleague',l:'Kolleg:innen',ctx:'work'},{k:'lead',l:'Team, das ich führe',ctx:'work'},
+  {k:'new',l:'Neue Leute',ctx:'private'},
+];
+const GROUPS=[{k:'solo',l:'Zu zweit'},{k:'small',l:'Kleine Gruppe'},{k:'round',l:'Große Runde'}];
+const SETTINGS=[{k:'-',l:'Egal'},{k:'walk',l:'Spaziergang'},{k:'meal',l:'Essen'},{k:'car',l:'Autofahrt'},{k:'call',l:'Videocall'},{k:'party',l:'Feier'}];
+const TONE_L={warm:'warm',verspielt:'verspielt',herausfordernd:'herausfordernd'};
+const THEME_L={beziehung:'Beziehung',familie:'Familie',selbstbild:'Selbstbild',werte:'Werte',vergangenheit:'Vergangenheit',zukunft:'Zukunft',gefuehle:'Gefühle',alltag:'Alltag'};
+
+const PRICE={in:2.0/1e6,out:10.0/1e6};
+const MODEL='claude-sonnet-4-6';
+const GEN_TARGET=12, REFILL_AT=5, SKETCH_EVERY=12, GEN_SHARE=0.35, CALIB_N=10;
+
+let S=null;
+const fresh=()=>({
+  role:'close',group:'solo',setting:'-',
+  sketches:{},pool:[],seen:[],reactions:[],
+  saved:[],liked:[],collections:[],persons:[],
+  mode:'calib', view:'foryou', calibQueue:[], calibDone:0, calibAnswers:[], profile:null,
+  personalize:true, allowGen:true,
+  lib:{tab:'liked',sel:false,picked:new Set(),naming:false,openColl:null},
+  videoOpen:null, saveTarget:null, vTab:'videos', pOpen:null,
+  personQ:null, personPick:null, personStage:'pick', personNewOpen:false, personRel:'friend',
+  swipes:0,likes:0,cost:0,calls:0,generating:false,lastPrompt:null,
+});
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const roleOf=k=>ROLES.find(r=>r.k===k);
+const nowSlot=()=>{const h=new Date().getHours();return h<11?'Morgen':h<15?'Mittag':h<18?'Nachmittag':h<23?'Abend':'späte Nacht';};
+let logs=[]; function log(kind,ic,txt){logs.unshift({kind,ic,txt});if(logs.length>16)logs.pop();renderSelfIfOpen();}
+let toastT=null;
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1800);}
+function toastAction(msg,label,cb){
+  const t=$('#toast');
+  t.innerHTML=`<span>${msg}</span><button class="toastbtn">${label}</button>`;
+  t.querySelector('.toastbtn').onclick=()=>{clearTimeout(toastT);t.classList.remove('show');cb();};
+  t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),4200);
+}
+
+/* ═══════════ KALIBRIERUNG ═══════════ */
+/* 10 Kennenlern-Fragen als Entweder-oder — links = A, rechts = B */
+/* 10 Kennenlern-Aussagen — rechts = stimmt, links = stimmt nicht */
+const CALIB=[
+  {stem:'Nach einem vollen Wochenende zieht es mich eher zu Leuten als zur Ruhe.', dim:'Energie', yes:'sucht Nähe zu Menschen', no:'lädt lieber allein auf'},
+  {stem:'Mit Stille im Gespräch fühle ich mich wohl.', dim:'Tempo', yes:'hält Stille gut aus', no:'füllt Pausen lieber'},
+  {stem:'Ich spreche ein Problem meist sofort aus, statt es erst zu sortieren.', dim:'Verarbeitung', yes:'denkt im Reden', no:'sortiert erst für sich'},
+  {stem:'Bei etwas Neuem probiere ich lieber gleich aus, statt mich erst einzulesen.', dim:'Herangehen', yes:'springt rein', no:'bereitet sich vor'},
+  {stem:'Ein ehrliches Wort bewegt mich mehr als eine große Geste.', dim:'Nähe', yes:'Worte zählen', no:'Taten zählen'},
+  {stem:'In einer Runde erzähle ich lieber von mir, als zuzuhören.', dim:'Ausdruck', yes:'erzählt gern', no:'hört lieber zu'},
+  {stem:'Eine Frage, die sofort tief geht, ist mir lieber als eine lockere.', dim:'Tiefe', yes:'mag Tiefe sofort', no:'mag den lockeren Einstieg'},
+  {stem:'Ich mag es, meinen Tag durchzuplanen.', dim:'Struktur', yes:'braucht Struktur', no:'mag Offenheit'},
+  {stem:'Um jemanden zu verstehen, interessieren mich seine Ängste mehr als seine Träume.', dim:'Blickwinkel', yes:'schaut auf Schatten', no:'schaut auf Sehnsucht'},
+  {stem:'Ich vergesse die Zeit eher unter Menschen als allein in einer Sache.', dim:'Fokus', yes:'im Miteinander', no:'in der Vertiefung'},
+];
+function pickCalibration(){ return CALIB.map(q=>({...q, calib:true})); }
+function startCalibration(){
+  S.calibQueue=pickCalibration(); S.mode='calib'; S.calibAnswers=[];
+  document.body.classList.add('calib');
+  $('#calibIntro').classList.add('hidden');
+  $('#main').classList.remove('hidden');
+  $('#pbarMain').classList.add('hidden'); $('#calibBar').classList.remove('hidden');
+  $('#bnav').classList.add('hidden');
+  $('#actsMain').classList.add('hidden'); $('#calibLabels').classList.remove('hidden');
+  $('#mainNote').textContent='Swipe nach rechts, wenn es auf dich zutrifft.';
+  S.pool=[...S.calibQueue];
+  updateCalibBar(); renderDeck();
+}
+function updateCalibBar(){
+  $('#calibNow').textContent=Math.min(S.calibDone+1,CALIB_N);
+  $('#calibFill').style.width=(S.calibDone/CALIB_N*100)+'%';
+}
+async function finishCalibration(){
+  $('#calibFill').style.width='100%';
+  document.body.classList.remove('calib');
+  $('#main').classList.add('hidden');
+  $('#calibDone').classList.remove('hidden');
+  buildProfile();   // Persönlichkeits-Profil aus den 10 Antworten (Haiku)
+}
+$('#calibStart').onclick=startCalibration;
+$('#calibGo').onclick=()=>{
+  $('#calibDone').classList.add('hidden'); $('#main').classList.remove('hidden');
+  S.mode='main';
+  $('#calibBar').classList.add('hidden'); $('#pbarMain').classList.remove('hidden');
+  $('#bnav').classList.remove('hidden');
+  $('#calibLabels').classList.add('hidden'); $('#actsMain').classList.remove('hidden');
+  $('#mainNote').textContent='Jetzt bewerten: rechts = mag ich, links = nö.';
+  S.pool=[]; setView('foryou'); refill();
+  setTimeout(()=>toast('Neuer Modus: rechts = mag ich · links = nö'),400);
+};
+
+/* ═══════════ PROFIL AUS KALIBRIERUNG ═══════════ */
+async function buildProfile(){
+  const ans=S.calibAnswers;
+  const prompt=`Eine Person hat 10 Aussagen über sich mit Ja oder Nein beantwortet. Daraus ergeben sich diese Merkmale:
+
+${ans.map(a=>`- ${a.dim}: ${a.text}`).join('\n')}
+
+Leite ein kurzes, warmes Persönlichkeitsbild ab, das hilft, gute Gesprächsfragen für sie zu wählen.
+Schreibe 2 knappe Sätze, direkt an die Person ("Du …"), konkret, ohne Küchenpsychologie. Dann 3-4 Schlagworte.
+Antworte NUR mit JSON, ohne Backticks:
+{"bild":"2 Sätze","worte":["wort1","wort2","wort3"]}`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:MODEL,max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    if(data.usage){S.cost+=(data.usage.input_tokens||0)*PRICE.in+(data.usage.output_tokens||0)*PRICE.out;S.calls++;}
+    let txt=data.content.filter(c=>c.type==='text').map(c=>c.text).join('').trim().replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();
+    const o=JSON.parse(txt);
+    S.profile={bild:o.bild,worte:o.worte||[]};
+    log('sys','✦','Persönlichkeitsbild aus 10 Antworten erstellt');
+    renderSelfIfOpen();
+  }catch(err){console.error(err);
+    // Fallback ohne API: aus den Antworten simpel zusammensetzen
+    S.profile={bild:'Wir haben deine ersten Vorlieben erfasst.',worte:S.calibAnswers.slice(0,3).map(a=>a.dim)};
+  }
+}
+
+/* ═══════════ AUSWAHL (ohne Tiefe) ═══════════ */
+const likedTones=()=>S.personalize?(S.sketches[S.role]?.tones||null):null;
+function pickCurated(n){
+  const r=roleOf(S.role); const seen=new Set(S.seen);
+  let c=CURATED.filter(q=>q.ctx===r.ctx&&!seen.has(q.text));
+  if(S.group==='round') c=c.filter(q=>q.effort!=='story');
+  const tones=likedTones();
+  const score=q=>{let s=1.0;
+    if(tones&&tones[q.tone]!=null)s+=tones[q.tone]*1.6;
+    if(S.setting==='party'&&q.tone==='verspielt')s+=0.5;
+    if(S.setting==='call'&&q.effort==='story')s-=0.4;
+    return s+Math.random()*1.0;};
+  const uniq=[],seen2=new Set();
+  for(const q of c.sort((a,b)=>score(b)-score(a))){if(seen2.has(q.text))continue;seen2.add(q.text);uniq.push({...q,src:'kuratiert'});if(uniq.length>=n)break;}
+  return uniq;
+}
+
+/* ═══════════ GENERIERUNG (ohne Tiefe, ohne Demografie) ═══════════ */
+function styleAnchors(){
+  const r=roleOf(S.role); const pool=CURATED.filter(q=>q.ctx===r.ctx);
+  const out=[],used=new Set();
+  ['warm','verspielt','herausfordernd'].forEach(t=>{pool.filter(q=>q.tone===t).sort(()=>Math.random()-0.5).slice(0,4).forEach(q=>{if(!used.has(q.text)){used.add(q.text);out.push(q);}});});
+  return out.slice(0,10);
+}
+function buildPrompt(){
+  const sk=S.sketches[S.role];
+  const anchors=styleAnchors(),avoid=S.seen.slice(-30);
+  return `Du schreibst Fragen für Convovi, ein Gesprächsspiel, das Menschen einander näherbringt.
+
+REGELN — nicht verhandelbar:
+- Beginne mit Was, Welche, Wobei, Wo, Wann, Worauf. NIEMALS mit Warum.
+- Konkret und alltagsnah. Nie abstrakt-philosophisch ("Was bedeutet Erfolg?" ist verboten).
+- Kein Coaching-, Therapie- oder Ratgeberton. Keine Wörter wie "Reise", "authentisch", "Selbstfürsorge".
+- 4 bis 20 Wörter pro Frage.
+- Softener sparsam: "heimlich", "insgeheim", "auch wenn es klein war".
+- Kontrast-Strukturen funktionieren gut: "was fällt leicht — und was schwer?"
+- Deutsch, Du-Form.
+
+SO KLINGEN GUTE FRAGEN (Stil-Anker):
+${anchors.map(a=>`- ${a.text}`).join('\n')}
+
+GELERNTE VORLIEBEN dieser Person:
+${(S.personalize&&sk)?sk.text:'Keine — halte dich eng an die Stil-Anker.'}
+${(S.personalize&&S.profile)?`\nPERSÖNLICHKEIT (aus dem Kennenlernen): ${S.profile.bild} Schlagworte: ${(S.profile.worte||[]).join(', ')}.`:''}
+
+Tageszeit gerade: ${nowSlot()}
+
+NICHT WIEDERHOLEN:
+${avoid.length?avoid.map(t=>`- ${t}`).join('\n'):'- (noch nichts)'}
+
+AUFGABE: Schreibe ${GEN_TARGET} neue Fragen, die zu den Vorlieben passen. Mische die Machart (offen, entweder-oder, kleines Szenario). Halte den Ton, der oben gelernt wurde.
+Antworte NUR mit JSON, ohne Backticks:
+[{"text":"...","tone":"warm|verspielt|herausfordernd","themes":["..."],"effort":"quick|medium|story"}]`;
+}
+function rejects(text){
+  const wc=text.trim().split(/\s+/).length;
+  if(/^warum/i.test(text.trim()))return 'Warum';
+  if(wc>24)return 'zu lang'; if(wc<4)return 'zu kurz';
+  if(/^(was bedeutet|ist |glaubst du)/i.test(text.trim()))return 'abstrakt';
+  if(/reise|authentisch|selbstfürsorge|achtsam|resilien/i.test(text))return 'Coaching';
+  if(S.seen.includes(text))return 'Dublette';
+  return null;
+}
+async function generateBatch(){
+  if(S.generating)return[];
+  S.generating=true; renderSelfIfOpen();
+  const prompt=buildPrompt(); S.lastPrompt=prompt;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:MODEL,max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    if(data.usage){S.cost+=(data.usage.input_tokens||0)*PRICE.in+(data.usage.output_tokens||0)*PRICE.out;S.calls++;}
+    let txt=data.content.filter(c=>c.type==='text').map(c=>c.text).join('').trim();
+    txt=txt.replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();
+    const arr=JSON.parse(txt); const kept=[]; let dropped=0;
+    for(const q of arr){
+      if(!q||typeof q.text!=='string'){dropped++;continue;}
+      if(rejects(q.text)){dropped++;continue;}
+      kept.push({text:q.text.trim(),tone:['warm','verspielt','herausfordernd'].includes(q.tone)?q.tone:'warm',
+        themes:Array.isArray(q.themes)?q.themes.slice(0,3):[],effort:q.effort||'medium',ctx:roleOf(S.role).ctx,src:'generiert'});
+    }
+    log('sys','◆',`${kept.length} Fragen generiert${dropped?` · ${dropped} vom Filter verworfen`:''}`);
+    S.generating=false; return kept;
+  }catch(err){console.error(err);log('sys','!',`Generierung nicht erreichbar (${err.message}) — spiele weiter kuratiert`);S.generating=false;return [];}
+}
+
+/* ═══════════ SELBSTBILD ═══════════ */
+async function updateSketch(force){
+  const r=roleOf(S.role); const mine=S.reactions.filter(x=>x.role===S.role);
+  if(mine.length<6 && !force)return;
+  if(mine.length<4)return;
+  const liked=mine.filter(x=>x.re!=='skip').map(x=>x.q), skipped=mine.filter(x=>x.re==='skip').map(x=>x.q);
+  const prompt=`Du analysierst, welche Gesprächsfragen eine Person mag.
+
+GEMOCHT:
+${liked.map(q=>`- [${q.tone}] ${q.text}`).join('\n')||'- (keine)'}
+
+ABGELEHNT:
+${skipped.map(q=>`- [${q.tone}] ${q.text}`).join('\n')||'- (keine)'}
+
+Schreibe eine sehr kurze Präferenz-Skizze für die Rolle "${r.l}". Erkenne Muster in Machart und Thema. Sei konkret, warm, alltagsnah.
+Antworte NUR mit JSON, ohne Backticks:
+{"mag":"max 16 Wörter","magNicht":"max 16 Wörter","tones":{"warm":-1..1,"verspielt":-1..1,"herausfordernd":-1..1}}`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:MODEL,max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    if(data.usage){S.cost+=(data.usage.input_tokens||0)*PRICE.in+(data.usage.output_tokens||0)*PRICE.out;S.calls++;}
+    let txt=data.content.filter(c=>c.type==='text').map(c=>c.text).join('').trim();
+    txt=txt.replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();
+    const o=JSON.parse(txt);
+    S.sketches[S.role]={text:`Mag:        ${o.mag}\nMag nicht:  ${o.magNicht}`,tones:o.tones||{},n:mine.length};
+    log('sys','✎',`Selbstbild für „${r.l}" aktualisiert`); renderSelfIfOpen();
+  }catch(err){console.error(err);log('sys','!','Selbstbild-Update fehlgeschlagen');
+    if(force)S.sketches[S.role]={text:'Mag:        (erste Eindrücke gesammelt)',tones:{},n:mine.length};}
+}
+
+/* ═══════════ POOL ═══════════ */
+async function refill(){
+  if(S.mode!=='main')return;
+  if(S.pool.length>REFILL_AT||S.generating)return;
+  const need=18-S.pool.length, genWanted=S.allowGen?Math.round(need*GEN_SHARE):0;
+  S.pool.push(...pickCurated(need-genWanted)); renderSelfIfOpen();
+  if(genWanted>0){
+    const gen=await generateBatch();
+    const merged=[],a=[...S.pool],b=[...gen];
+    while(a.length||b.length){if(a.length)merged.push(a.shift());if(b.length&&Math.random()<0.55)merged.push(b.shift());else if(!a.length&&b.length)merged.push(b.shift());}
+    S.pool=merged;
+  }
+  if(S.view==='foryou')renderDeck(); renderSelfIfOpen();
+}
+
+/* ═══════════ DECK ═══════════ */
+function renderDeck(){
+  const d=$('#deck'); if(!d)return; d.innerHTML='';
+  const eL=document.createElement('div');eL.className='edge left';eL.id='edgeL';
+  const eR=document.createElement('div');eR.className='edge right';eR.id='edgeR';
+  d.appendChild(eL);d.appendChild(eR);
+  const rot=[6,-5,3], off=[[13,15],[-13,11],[7,20]];
+  for(let i=2;i>=0;i--){const s=document.createElement('div');s.className='qcard shell';
+    s.style.transform=`translate(${off[i][0]}px,${off[i][1]}px) rotate(${rot[i]}deg) scale(${1-(i+1)*0.02})`;
+    s.style.zIndex=String(1+(2-i));s.innerHTML='<span class="corner"></span>';d.appendChild(s);}
+  if(!S.pool.length){const e=document.createElement('div');e.className='qcard empty';e.style.zIndex='10';
+    e.innerHTML=S.generating?'<div class="es"><span class="spin"></span> Neue Fragen entstehen …</div>':'<div class="es">Kurz kein Nachschub.<br>Swipe gleich weiter.</div>';d.appendChild(e);return;}
+  const top=card(S.pool[0]);top.style.zIndex='10';top.classList.add('top','enter');
+  if(S.mode==='calib'&&S.calibDone<2)top.classList.add('calibwiggle');
+  d.appendChild(top);requestAnimationFrame(()=>top.classList.remove('enter'));drag(top,S.pool[0]);
+}
+/* Stufe 2 — acht kurze Prinzipien fürs Gespräch */
+const PRINCIPLES=[
+  {t:'Öffne zuerst selbst', s:'Wer fragt, ohne etwas von sich zu zeigen, führt ein Interview. Beantworte deine Frage zuerst — kurz, ehrlich. Dann fühlt sie sich wie ein Angebot an, nicht wie ein Test.'},
+  {t:'Halt die Pause aus', s:'Nach einer guten Frage kommt oft Stille. Das ist kein Fehler, sondern Denkzeit. Zähl innerlich bis fünf, bevor du nachhilfst — meistens kommt genau dann das Ehrliche.'},
+  {t:'Nachfragen schlägt neue Frage', s:'Die zweite Frage zum selben Thema bringt mehr als zehn neue. "Wie war das für dich?" öffnet fast immer eine Ebene tiefer.'},
+  {t:'Lies den Raum, nicht die Liste', s:'Eine tiefe Frage im falschen Moment schließt mehr, als sie öffnet. Wenn jemand müde ist oder abgelenkt — nimm die leichte Frage. Der Moment entscheidet, nicht die Reihenfolge.'},
+  {t:'Kein Verhör', s:'Frage, Antwort, nächste Frage — das ist ein Fragebogen. Reagiere zwischendurch: erzähl was Eigenes, lach, hak nach. Ein Gespräch ist ein Ballwechsel.'},
+  {t:'Nimm Druck raus', s:'Kleine Zusätze verändern alles: "auch wenn es klein war", "musst du nicht beantworten". Sie geben ein Hintertürchen — und paradoxerweise antworten Leute dann offener.'},
+  {t:'Ein Nein ist okay', s:'Wenn jemand ausweicht, ist das eine Antwort. Geh drüber hinweg, ohne es groß zu machen. Wer merkt, dass er nicht muss, öffnet sich beim nächsten Mal eher.'},
+  {t:'Eine gute Frage reicht', s:'Du brauchst nicht zwanzig. Ein Abend, eine Frage, die wirklich sitzt — daran erinnert sich der andere noch Wochen später.'},
+];
+const USE_TIPS={
+  verspielt:      'Guter Einstieg, wenn ihr euch gerade erst warmredet. Antworte ruhig zuerst selbst.',
+  warm:           'Wirkt am besten, wenn ihr schon ein paar Minuten redet — und du Zeit für die Antwort hast.',
+  herausfordernd: 'Braucht Vertrauen. Stell sie erst, wenn ihr schon offen wart — und beantworte sie auch selbst.',
+  story:          'Plan Zeit ein: Hier wird erzählt. Ideal beim Spazieren oder auf längeren Fahrten.',
+  quick:          'Perfekt für zwischendurch — Wartezeit, Autofahrt, kurz vor dem Essen.',
+};
+function tipFor(q){
+  if(q.effort==='story') return USE_TIPS.story;
+  if(q.tone==='herausfordernd') return USE_TIPS.herausfordernd;
+  if(q.tone==='verspielt') return USE_TIPS.verspielt;
+  if(q.effort==='quick') return USE_TIPS.quick;
+  return USE_TIPS.warm;
+}
+
+function card(q){
+  const el=document.createElement('div'); el.className='qcard';
+  if(q.calib){
+    el.className='qcard calibcard';
+    el.innerHTML=`<span class="corner"></span>
+      <div class="calibstem">${q.stem}</div>
+      <div class="calibcta"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg> swipe deine Antwort <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></div>`;
+    return el;
+  }
+  const acts=`<div class="cardacts">
+    <button class="cardbtn share" title="Frage teilen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 15V4M8 7l4-3 4 3"/></svg></button>
+    <button class="cardbtn person" title="Für eine Person merken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.2"/><path d="M4 19c0-3.3 2.7-5.5 6-5.5 1 0 1.9.2 2.7.5"/><path d="M18 15v6M15 18h6"/></svg></button>
+  </div>`;
+  const info=`<button class="infobtn" title="Mehr zu dieser Frage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.8" r="0.4" fill="currentColor"/></svg></button>`;
+  el.innerHTML=`${info}<div class="cardinfo"><span class="ci">${tipFor(q)}</span></div><div class="qtext">${q.text}</div>${acts}`;
+  const stop=b=>b&&b.addEventListener('pointerdown',e=>e.stopPropagation());
+  const pb=el.querySelector('.person'), ib=el.querySelector('.infobtn'), sb=el.querySelector('.share'), info2=el.querySelector('.cardinfo');
+  [pb,ib,sb].forEach(stop);
+  if(pb)pb.addEventListener('click',e=>{e.stopPropagation();openPersonModal(q.text);});
+  if(sb)sb.addEventListener('click',e=>{e.stopPropagation();shareQuestion(q.text);});
+  if(ib)ib.addEventListener('click',e=>{e.stopPropagation();info2.classList.toggle('open');ib.classList.toggle('on');el.classList.toggle('infoopen');});
+  return el;
+}
+function setArmed(dir){
+  const calib=S.mode==='calib';
+  if(calib){
+    const lN=$('#clNo'),lY=$('#clYes'); if(lN)lN.classList.toggle('armed',dir==='A'); if(lY)lY.classList.toggle('armed',dir==='B');
+    const L=$('#edgeL'),R=$('#edgeR');
+    if(L)L.style.opacity=dir==='A'?'1':'0';
+    if(R)R.style.opacity=dir==='B'?'1':'0';
+    return;
+  }
+  [['wN','skip'],['wS','save'],['wY','like']].forEach(([id,k])=>{const w=$('#'+id),on=dir===k;w.classList.toggle('armed',on);w.querySelector('.act').classList.toggle('armed',on);});
+  const L=$('#edgeL'),R=$('#edgeR');
+  if(L)L.style.opacity=dir==='skip'?'1':'0';
+  if(R)R.style.opacity=dir==='like'?'1':'0';
+}
+function drag(el,q){
+  let sx=0,sy=0,dx=0,dy=0,on=false;
+  el.addEventListener('pointerdown',e=>{on=true;sx=e.clientX;sy=e.clientY;el.style.transition='none';el.setPointerCapture(e.pointerId);});
+  el.addEventListener('pointermove',e=>{if(!on)return;dx=e.clientX-sx;dy=e.clientY-sy;el.style.transform=`translate(${dx}px,${dy}px) rotate(${dx/20}deg)`;
+    let dir=null;const A=38;
+    if(S.mode==='calib'){ if(dx>A)dir='B'; else if(dx<-A)dir='A'; }
+    else { if(dy<-A&&Math.abs(dy)>Math.abs(dx))dir='save'; else if(dx>A)dir='like'; else if(dx<-A)dir='skip'; }
+    setArmed(dir);});
+  const end=()=>{if(!on)return;on=false;el.style.transition='transform .3s cubic-bezier(.2,.6,.2,1)';
+    if(S.mode==='calib'){ if(dx>95)return fling(el,q,'B'); if(dx<-95)return fling(el,q,'A'); el.style.transform='';setArmed(null); return; }
+    if(dy<-90&&Math.abs(dx)<90)return fling(el,q,'save');if(dx>95)return fling(el,q,'like');if(dx<-95)return fling(el,q,'skip');
+    el.style.transform='';setArmed(null);};
+  el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
+}
+function fling(el,q,re){const dir=(re==='like'||re==='B')?1:(re==='skip'||re==='A')?-1:0;setArmed(re);
+  el.style.transition='transform .32s ease-out, opacity .32s';
+  el.style.transform=re==='save'?'translateY(-540px) rotate(-5deg)':`translate(${dir*580}px,-40px) rotate(${dir*16}deg)`;
+  el.style.opacity='0';commit(q,re);setTimeout(()=>setArmed(null),300);}
+async function commit(q,re){
+  if(S.mode==='calib'){
+    const agree=(re==='B');
+    S.calibAnswers.push({stem:q.stem, dim:q.dim, agree, text:agree?q.yes:q.no});
+    S.pool.shift();
+    S.calibDone++; updateCalibBar();
+    if(S.calibDone>=CALIB_N){setTimeout(finishCalibration,320);return;}
+    setTimeout(renderDeck,290); return;
+  }
+  S.swipes++; if(re!=='skip')S.likes++;
+  S.seen.push(q.text); S.reactions.push({role:S.role,re,q});
+  if(re==='like'){if(!S.liked.some(x=>x.text===q.text))S.liked.unshift({...q});}
+  if(re==='save'){if(!S.saved.some(x=>x.text===q.text))S.saved.unshift({...q}); toastAction('Gemerkt','+ Person zuordnen',()=>openPersonModal(q.text));}
+  updateLibBadge();
+  S.pool.shift();
+  log(re,re==='like'?'♥':re==='skip'?'✕':'★',q.text);
+  setTimeout(renderDeck,290); renderSelfIfOpen();
+  if(S.swipes%SKETCH_EVERY===0)updateSketch();
+  if(S.pool.length<=REFILL_AT)refill();
+}
+
+/* ═══════════ VIEWS ═══════════ */
+function setView(v){
+  S.view=v;
+  $('#viewForYou').classList.toggle('hidden',v!=='foryou');
+  $('#viewVideos').classList.toggle('hidden',v!=='videos');
+  $('#viewLibrary').classList.toggle('hidden',v!=='library');
+  $('#pbarMain').style.visibility = v==='foryou'?'visible':'hidden';
+  $('#mainNote').style.visibility = v==='foryou'?'visible':'hidden';
+  $$('#bnav button').forEach(b=>b.classList.toggle('on',b.dataset.view===v));
+  if(v==='videos')renderVideos();
+  if(v==='library')renderLibrary();
+  if(v==='foryou')renderDeck();
+}
+$$('#bnav button').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+
+/* VIDEOS + PRINZIPIEN */
+function renderVideos(){
+  if(S.videoOpen){renderVideoDetail(S.videoOpen);return;}
+  const host=$('#viewVideos');
+  const tabs=`<div class="libtabs" style="margin-bottom:16px">
+    <button class="${S.vTab!=='tips'?'on':''}" onclick="vTab('videos')"><span class="lt">Fragen-Sets</span><span class="ln">${VIDEOS.length}</span></button>
+    <button class="${S.vTab==='tips'?'on':''}" onclick="vTab('tips')"><span class="lt">Gesprächs-Tipps</span><span class="ln">${PRINCIPLES.length}</span></button></div>`;
+  if(S.vTab==='tips'){
+    host.innerHTML=`<div class="vhead">Björns Fragen</div>${tabs}
+      <p class="vsub" style="margin-top:-4px">Acht Dinge, die aus einer guten Frage ein gutes Gespräch machen.</p>
+      <div class="plist">`+PRINCIPLES.map((p,i)=>`
+        <div class="pcard ${S.pOpen===i?'open':''}" onclick="pToggle(${i})">
+          <div class="ph"><span class="pn">${String(i+1).padStart(2,'0')}</span><span class="pt">${p.t}</span>
+            <span class="pchev">${S.pOpen===i?'▾':'▸'}</span></div>
+          ${S.pOpen===i?`<div class="ps">${p.s}</div>`:''}
+        </div>`).join('')+`</div>`;
+    return;
+  }
+  host.innerHTML=`<div class="vhead">Björns Fragen</div>${tabs}
+    <p class="vsub" style="margin-top:-4px">Jede Frage, die ich auf Instagram & TikTok stelle — zum Nachswipen und Sammeln.</p>
+    <div class="vlist">`+VIDEOS.map(v=>`
+      <div class="vrow" data-v="${v.id}">
+        <div class="vthumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg></div>
+        <div class="vmeta"><div class="vtitle">${v.title}</div><div class="vinfo">${v.qs.length} Fragen · ${v.tag}</div></div>
+        <span class="vchev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </div>`).join('')+`</div>`;
+  host.querySelectorAll('.vrow').forEach(el=>el.onclick=()=>{S.videoOpen=el.dataset.v;renderVideos();});
+}
+window.vTab=t=>{S.vTab=t;S.pOpen=null;renderVideos();};
+window.pToggle=i=>{S.pOpen=S.pOpen===i?null:i;renderVideos();};
+function renderVideoDetail(id){
+  const v=VIDEOS.find(x=>x.id===id); const host=$('#viewVideos');
+  const isSaved=t=>S.saved.some(q=>q.text===t)||S.liked.some(q=>q.text===t)||S.collections.some(c=>c.texts.includes(t));
+  host.innerHTML=`
+    <button class="vback" id="vBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Alle Fragen-Sets</button>
+    <div class="vdethead"><div class="vthumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg></div>
+      <div><h2>${v.title}</h2><div class="vinfo">${v.qs.length} Fragen · ${v.tag}</div></div></div>
+    <button class="vallbtn" id="vAll">Alle ${v.qs.length} Fragen merken</button>
+    <div class="vqlist">`+v.qs.map((t,i)=>`
+      <div class="vq ${isSaved(t)?'saved':''}" data-i="${i}">
+        <div class="vqt">${t}</div>
+        <button class="plus" data-t="${encodeURIComponent(t)}" title="Speichern"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+      </div>`).join('')+`</div>`;
+  $('#vBack').onclick=()=>{S.videoOpen=null;renderVideos();};
+  $('#vAll').onclick=()=>{let added=0;v.qs.forEach(t=>{if(!S.saved.some(q=>q.text===t)){S.saved.unshift(mkQ(t));added++;}});updateLibBadge();renderVideoDetail(id);toast(`${added} Fragen zu „Gemerkt" hinzugefügt`);};
+  host.querySelectorAll('.plus').forEach(b=>b.onclick=e=>{e.stopPropagation();openSaveTarget(decodeURIComponent(b.dataset.t));});
+}
+function mkQ(text){
+  const c=CURATED.find(q=>q.text===text);
+  return c?{...c}:{text,tone:'warm',themes:[],effort:'medium',ctx:'private',src:'video'};
+}
+
+/* SAVE TARGET */
+function openSaveTarget(text){
+  S.saveTarget=text; $('#saveSub').textContent=text.length>54?text.slice(0,54)+'…':text;
+  const body=$('#saveBody');
+  let html=`<div class="savelist">
+    <div class="savet" data-t="__fav"><span class="si"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21l-1.5-1.4C5.4 15 2 11.9 2 8.2 2 5.4 4.2 3.3 7 3.3c1.6 0 3.1.7 4 1.9.9-1.2 2.4-1.9 4-1.9 2.8 0 5 2.1 5 4.9 0 3.7-3.4 6.8-8.5 11.4L12 21z"/></svg></span><span class="st">Zu „Mag ich"</span><span class="sc">${S.liked.length}</span></div>
+    <div class="savet" data-t="__saved"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h11a1 1 0 0 1 1 1v15l-6.5-3.2L5 20V5a1 1 0 0 1 1-1z"/></svg></span><span class="st">Zu „Gemerkt"</span><span class="sc">${S.saved.length}</span></div>`;
+  S.collections.forEach(c=>{html+=`<div class="savet" data-t="__c:${c.id}"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></span><span class="st">${c.name}</span><span class="sc">${c.texts.length}</span></div>`;});
+  html+=`<div class="savet" data-t="__new"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="st">Neue Sammlung …</span></div></div>
+    <div id="newCollBox" class="hidden" style="margin-top:12px"><div class="namerow"><input type="text" id="newCollName" placeholder="Name der Sammlung" /><button class="minibtn prim" id="newCollSave">Anlegen</button></div></div>`;
+  body.innerHTML=html;
+  body.querySelectorAll('.savet').forEach(el=>el.onclick=()=>{
+    const t=el.dataset.t;
+    if(t==='__new'){$('#newCollBox').classList.remove('hidden');$('#newCollName').focus();
+      $('#newCollSave').onclick=()=>{const nm=$('#newCollName').value.trim()||`Sammlung ${S.collections.length+1}`;
+        const c={id:'c'+Date.now(),name:nm,texts:[S.saveTarget]};S.collections.unshift(c);closeModal('mdSave');afterSave(`„${nm}" angelegt`);};
+      return;}
+    if(t==='__fav'){if(!S.liked.some(q=>q.text===S.saveTarget))S.liked.unshift(mkQ(S.saveTarget));afterSave('Zu „Mag ich" gespeichert');}
+    else if(t==='__saved'){if(!S.saved.some(q=>q.text===S.saveTarget))S.saved.unshift(mkQ(S.saveTarget));afterSave('Zu „Gemerkt" gespeichert');}
+    else if(t.startsWith('__c:')){const c=S.collections.find(x=>x.id===t.slice(4));if(c&&!c.texts.includes(S.saveTarget))c.texts.push(S.saveTarget);afterSave(`Zu „${c.name}" hinzugefügt`);}
+    closeModal('mdSave');
+  });
+  openModal('mdSave');
+}
+function afterSave(msg){updateLibBadge();toast(msg);if(S.videoOpen)renderVideoDetail(S.videoOpen);if(S.view==='library')renderLibrary();}
+
+/* ═══════════ TEILEN ═══════════ */
+async function shareQuestion(text){
+  if(navigator.share){
+    try{ await navigator.share({title:'Convovi',text}); return; }
+    catch(e){ if(e && e.name==='AbortError') return; }
+  }
+  openShareSheet(text);
+}
+function openShareSheet(text){
+  const enc=encodeURIComponent(text);
+  $('#shareSub').textContent=text.length>54?text.slice(0,54)+'…':text;
+  $('#shareBody').innerHTML=`<div class="savelist">
+    <a class="savet" href="sms:?&body=${enc}"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-5 4V7a1 1 0 0 1 1-1z"/></svg></span><span class="st">Als Nachricht senden</span></a>
+    <a class="savet" href="https://wa.me/?text=${enc}" target="_blank" rel="noopener"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3z"/><path d="M9 9c0 4 2 6 6 6"/></svg></span><span class="st">Über WhatsApp</span></a>
+    <button class="savet" id="shareCopy" style="border:1px solid var(--line);width:100%;text-align:left"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h9"/></svg></span><span class="st">Text kopieren</span></button>
+  </div>`;
+  $('#shareCopy').onclick=async()=>{
+    try{ await navigator.clipboard.writeText(text); }catch(e){}
+    closeModal('mdShare'); toast('Frage kopiert');
+  };
+  openModal('mdShare');
+}
+
+/* ═══════════ PERSONEN + KALENDERERINNERUNG ═══════════ */
+const RELS=[{k:'partner',l:'Partner:in'},{k:'friend',l:'Freund:in'},{k:'family',l:'Familie'},{k:'colleague',l:'Kolleg:in'}];
+const relLabel=k=>(RELS.find(r=>r.k===k)||{l:k}).l;
+function openPersonModal(text){S.personQ=text;S.personPick=null;S.personStage='pick';S.personNewOpen=false;S.personRel='friend';renderPersonModal();openModal('mdPerson');}
+function renderPersonModal(){
+  $('#personSub').textContent=S.personQ.length>52?S.personQ.slice(0,52)+'…':S.personQ;
+  const body=$('#personBody');
+  if(S.personStage==='pick'){
+    $('#personTitle').textContent='Für wen ist diese Frage?';
+    let html='<div class="savelist">';
+    S.persons.forEach(p=>{html+=`<div class="savet" data-p="${p.id}"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.3"/><path d="M5.5 20c0-3.4 2.9-5.6 6.5-5.6s6.5 2.2 6.5 5.6"/></svg></span><span class="st">${p.name}<div style="font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:2px">${relLabel(p.relation)}</div></span><span class="sc">${p.questions.length}</span></div>`;});
+    html+=`<div class="savet" data-p="__new"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="st">Neue Person …</span></div></div>`;
+    if(S.personNewOpen){
+      html+=`<div class="namebox" style="margin-top:12px"><span class="nl">Wer ist es?</span>
+        <input type="text" id="personName" placeholder="Name, z. B. Lena" />
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:2px" id="relChips"></div>
+        <button class="minibtn prim" id="personCreate" style="margin-top:4px">Person anlegen</button></div>`;
+    }
+    body.innerHTML=html;
+    body.querySelectorAll('.savet').forEach(el=>el.onclick=()=>{const id=el.dataset.p;if(id==='__new'){S.personNewOpen=true;renderPersonModal();setTimeout(()=>$('#personName')?.focus(),40);}else choosePerson(id);});
+    if(S.personNewOpen){
+      const rc=$('#relChips');
+      RELS.forEach(r=>{const b=document.createElement('div');b.className='chip';b.style.cssText='font-size:12.5px;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--dim);cursor:pointer';
+        if(S.personRel===r.k){b.style.background='var(--terra)';b.style.color='#fff';b.style.borderColor='var(--terra)';}
+        b.textContent=r.l;b.onclick=()=>{S.personRel=r.k;renderPersonModal();setTimeout(()=>$('#personName')?.focus(),10);};rc.appendChild(b);});
+      $('#personCreate').onclick=createPerson;
+    }
+  }else{ // reminder-stage
+    const p=S.persons.find(x=>x.id===S.personPick);
+    $('#personTitle').textContent=`Für ${p.name} gemerkt`;
+    body.innerHTML=`
+      <div class="ins" style="margin-bottom:16px"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span><span class="tx">Die Frage ist jetzt bei <b>${p.name}</b> gespeichert. Beim nächsten Mal hast du sie parat.</span></div>
+      <div class="namebox">
+        <button id="pushOpen" style="display:flex;align-items:center;gap:11px;width:100%;background:none;border:0;padding:2px;cursor:pointer;text-align:left">
+          <span class="si" style="flex:none;width:34px;height:34px;border-radius:10px;background:var(--accsoft);color:var(--terra);display:grid;place-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>
+          <span style="flex:1"><span style="font-size:13.5px;font-weight:600;color:var(--ink)">Per Push erinnern</span><br><span style="font-family:var(--mono);font-size:10.5px;color:var(--faint)">Wir stupsen dich zur richtigen Zeit an</span></span>
+        </button>
+        <div id="remBox" class="hidden" style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+          <input type="datetime-local" id="remDate" />
+          <div style="background:var(--accsoft);border-radius:12px;padding:12px 13px;font-size:12px;color:var(--dim);line-height:1.6">
+            <div style="font-family:var(--mono);font-size:10px;text-transform:uppercase;color:var(--terra-deep);margin-bottom:5px">🔔 Push-Vorschau</div>
+            <b style="color:var(--ink)">Denk an ${p.name}</b><br>${S.personQ}
+          </div>
+          <button class="minibtn prim" id="remSave">Erinnerung setzen</button>
+        </div>
+      </div>
+      <button class="bigbtn" id="personDone" style="width:100%;margin-top:16px;padding:13px">Fertig</button>`;
+    $('#pushOpen').onclick=()=>{$('#remBox').classList.toggle('hidden');if(!$('#remBox').classList.contains('hidden'))$('#remDate')?.focus();};
+    $('#remSave').onclick=()=>{
+      const dv=$('#remDate').value;
+      const when=dv?new Date(dv).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'ohne Zeitpunkt';
+      p.reminders.push({type:'push',note:S.personQ,when});
+      toast(`Push-Erinnerung gesetzt · ${when}`);
+      closeModal('mdPerson');
+    };
+    $('#personDone').onclick=()=>closeModal('mdPerson');
+  }
+}
+function choosePerson(id){const p=S.persons.find(x=>x.id===id);if(!p.questions.includes(S.personQ))p.questions.push(S.personQ);S.personPick=id;S.personStage='reminder';renderPersonModal();updateLibBadge();toast(`Frage für ${p.name} gespeichert`);}
+function createPerson(){
+  const nm=($('#personName')?.value||'').trim(); if(!nm){$('#personName').focus();return;}
+  const p={id:'p'+Date.now(),name:nm,relation:S.personRel,questions:[],reminders:[]};
+  S.persons.unshift(p); S.personNewOpen=false; choosePerson(p.id);
+}
+
+/* Buttons + Tastatur */
+$('#bY').onclick=()=>trigger('like');$('#bN').onclick=()=>trigger('skip');$('#bS').onclick=()=>trigger('save');
+function trigger(re){const top=$('#deck .qcard.top');if(!top||!S.pool[0])return;fling(top,S.pool[0],re);}
+document.addEventListener('keydown',e=>{
+  if($('#main').classList.contains('hidden'))return;
+  if(S.mode!=='calib'&&S.view!=='foryou')return;
+  if(e.target.matches('input,textarea'))return;
+  if($('.backdrop.open'))return;
+  if(S.mode==='calib'){
+    if(e.key==='ArrowRight')trigger('B'); if(e.key==='ArrowLeft')trigger('A');
+    return;
+  }
+  if(e.key==='ArrowRight')trigger('like');if(e.key==='ArrowLeft')trigger('skip');if(e.key==='ArrowUp'){e.preventDefault();trigger('save');}
+});
+
+/* MODALS */
+function openModal(id){$('#'+id).classList.add('open');}
+function closeModal(id){$('#'+id).classList.remove('open');}
+$$('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
+$$('.backdrop').forEach(bd=>bd.addEventListener('click',e=>{if(e.target===bd)closeModal(bd.id);}));
+$('#btnSelf').onclick=()=>{renderSelf();openModal('mdSelf');};
+
+/* SELF */
+function insightRows(){
+  const mine=S.reactions.filter(x=>x.role===S.role);
+  const liked=mine.filter(x=>x.re!=='skip').map(x=>x.q);
+  if(mine.length<3)return null;
+  const rows=[];
+  const tc={};liked.forEach(q=>tc[q.tone]=(tc[q.tone]||0)+1);
+  const top=Object.entries(tc).sort((a,b)=>b[1]-a[1])[0];
+  if(top)rows.push(['✦',`<b>${TONE_L[top[0]]||top[0]}e</b> Fragen ziehen bei dir am ehesten.`]);
+  const th={};liked.forEach(q=>(q.themes||[]).forEach(t=>th[t]=(th[t]||0)+1));
+  const tt=Object.entries(th).sort((a,b)=>b[1]-a[1])[0];
+  if(tt)rows.push(['◍',`Themen wie <b>${THEME_L[tt[0]]||tt[0]}</b> sprechen dich an.`]);
+  const lr=Math.round(S.likes/Math.max(1,S.swipes)*100);
+  rows.push(['♥',lr>=60?`Du bist <b>offen</b> — ${lr}% Zusage-Quote.`:lr<=30?`Du bist <b>wählerisch</b> — nur ${lr}% nach rechts.`:`Ausgewogen: <b>${lr}%</b> gefallen dir.`]);
+  return rows;
+}
+function renderSelf(){
+  $('#selfSub').textContent=`${S.reactions.length} Swipes · dein Profil`;
+  const sk=S.sketches[S.role];let html='';
+
+  // Steuerung: Personalisierung an/aus, KI-Fragen an/aus
+  html+=`<div class="ctlbox">
+    <div class="ctlrow"><div class="ctltx"><b>Personalisierung</b><span>Fragen an deine Vorlieben anpassen</span></div>
+      <button class="switch ${S.personalize?'on':''}" onclick="toggleP('personalize')"><span></span></button></div>
+    <div class="ctlrow"><div class="ctltx"><b>KI-generierte Fragen</b><span>Neue Fragen aus deinen Swipes erzeugen. Aus = nur Fragen aus der Sammlung.</span></div>
+      <button class="switch ${S.allowGen?'on':''}" onclick="toggleP('allowGen')"><span></span></button></div>
+  </div>`;
+
+  // Editierbares Persönlichkeitsbild
+  if(S.profile){
+    html+=`<div class="selfquote"><div class="lab">Aus dem Kennenlernen · antippen zum Ändern</div>
+      <textarea id="pfBild" class="pfedit" rows="3" oninput="S.profile.bild=this.value">${S.profile.bild}</textarea>
+      <div class="pfworte" id="pfWorte">${(S.profile.worte||[]).map((w,i)=>`<span class="wchip">${w}<b onclick="rmWort(${i})">×</b></span>`).join('')}
+        <input type="text" id="pfAdd" placeholder="+ Wort" onkeydown="if(event.key==='Enter'){addWort(this.value);this.value='';}" /></div>
+    </div>`;
+  }else{
+    html+=`<div class="selfquote"><div class="lab">Noch am Kennenlernen</div><div class="selfempty">Swipe ein paar Fragen — dann entsteht hier dein Bild.</div></div>`;
+  }
+  if(S.personalize&&sk)html+=`<div class="selfquote"><div class="lab">Aus deinen Bewertungen</div><div class="q">${sk.text.replace(/^(Mag:|Mag nicht:)/gm,m=>`<span class="k">${m}</span>`)}</div></div>`;
+
+  // Tech
+  const g=S.pool.filter(q=>q.src==='generiert').length;
+  let poolBar='';for(let i=0;i<18;i++){const q=S.pool[i];poolBar+=`<i class="${q?(q.src==='kuratiert'?'kur':'gen'):'done'}"></i>`;}
+  const perQ=S.cost/Math.max(1,S.swipes);
+  const logHtml=logs.length?logs.map(l=>`<div class="li ${l.kind}"><span class="ic">${l.ic}</span><span class="tx">${l.txt}</span></div>`).join(''):'<div style="font-size:12px;color:var(--faint);font-style:italic">Noch nichts.</div>';
+  html+=`<details class="tech"><summary>Hinter den Kulissen — für Neugierige</summary><div class="techgrid">
+    <div class="tsec"><h4>Fragen-Vorrat · ${S.pool.length} übrig, ${g} generiert</h4><div class="pool">${poolBar}</div>
+      <div class="poolleg"><span><b style="background:var(--terra-soft)"></b>kuratiert</span><span><b style="background:var(--terra)"></b>generiert</span></div></div>
+    <div class="tsec"><h4>Echte Kosten</h4><div class="costrow">
+      <div class="costc"><div class="cl">Diese Sitzung</div><div class="cv">$${S.cost.toFixed(4)}</div><div class="cs">${S.calls} API-Aufruf${S.calls===1?'':'e'}</div></div>
+      <div class="costc"><div class="cl">Hochgerechnet</div><div class="cv">${S.cost>0?'$'+(perQ*200*1000).toFixed(0):'—'}</div><div class="cs">1.000 User · 200/Mon.</div></div></div></div>
+    <div class="tsec"><h4>Verlauf</h4><div class="log">${logHtml}</div></div>
+  </div></details>
+
+  <div class="privrow">
+    <button class="linkbtn" onclick="openModal('mdPriv')">Datenschutz</button>
+    <button class="dangerbtn" onclick="deleteProfile()">Profil löschen</button>
+  </div>`;
+  $('#selfBody').innerHTML=html;
+}
+window.toggleP=k=>{S[k]=!S[k];S.pool=[];renderSelf();refill();toast((k==='personalize'?'Personalisierung ':'KI-Fragen ')+(S[k]?'an':'aus'));};
+window.rmWort=i=>{S.profile.worte.splice(i,1);renderSelf();};
+window.addWort=v=>{v=v.trim();if(v&&S.profile){(S.profile.worte=S.profile.worte||[]).push(v);renderSelf();}};
+window.deleteProfile=()=>{
+  if(!confirm('Dein Profil und alle gelernten Daten löschen? Das kann nicht rückgängig gemacht werden.'))return;
+  S.profile=null;S.sketches={};S.reactions=[];S.liked=[];S.saved=[];S.collections=[];S.persons=[];S.calibAnswers=[];
+  S.swipes=0;S.likes=0;logs=[];updateLibBadge();
+  toast('Profil gelöscht');closeModal('mdSelf');
+};
+function renderSelfIfOpen(){if($('#mdSelf').classList.contains('open'))renderSelf();}
+
+/* LIBRARY */
+function updateLibBadge(){const total=S.saved.length+S.liked.length;const c=$('#navLibCnt');if(total){c.classList.remove('hidden');c.textContent=total;}else c.classList.add('hidden');}
+function curList(){return S.lib.tab==='liked'?S.liked:S.saved;}
+function renderLibrary(){
+  const L=S.lib;const host=$('#viewLibrary');let html='';
+  html+=`<div class="vhead" style="margin-bottom:12px">Meine Fragen</div>`;
+  html+=`<div class="libtabs">
+    <button class="${L.tab==='liked'?'on':''}" onclick="libTab('liked')"><span class="lt">Mag ich</span><span class="ln">${S.liked.length}</span></button>
+    <button class="${L.tab==='saved'?'on':''}" onclick="libTab('saved')"><span class="lt">Gemerkt</span><span class="ln">${S.saved.length}</span></button>
+    <button class="${L.tab==='collections'?'on':''}" onclick="libTab('collections')"><span class="lt">Listen</span><span class="ln">${S.collections.length}</span></button>
+    <button class="${L.tab==='persons'?'on':''}" onclick="libTab('persons')"><span class="lt">Personen</span><span class="ln">${S.persons.length}</span></button></div>`;
+  if(L.tab==='persons'){
+    if(!S.persons.length)html+=`<div class="libempty">Noch keine Personen.<br>Tippe auf einer Frage unten rechts das <b>Personen-Symbol</b>, um eine Frage für jemanden zu merken.</div>`;
+    else html+=S.persons.map(p=>{const open=L.openColl===p.id;return `<div class="coll"><div class="ch" onclick="libToggleColl('${p.id}')"><span class="cn">${p.name}</span><span class="cc">${relLabel(p.relation)} · ${p.questions.length} Fragen ${open?'▾':'▸'}</span></div>${open?`<div class="cq">${p.questions.map(t=>`<div class="cqi">${t}</div>`).join('')}${p.reminders.length?`<div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)">${p.reminders.map(r=>`<div class="cqi" style="color:var(--terra-deep)">🔔 Push · ${r.when}</div>`).join('')}</div>`:''}</div>`:''}</div>`;}).join('');
+    host.innerHTML=html;return;
+  }
+  if(L.tab==='collections'){
+    if(!S.collections.length)html+=`<div class="libempty">Noch keine Sammlungen.<br>Speichere Fragen aus Videos oder deiner Bibliothek in eine neue Liste.</div>`;
+    else html+=S.collections.map(c=>{const open=L.openColl===c.id;return `<div class="coll"><div class="ch" onclick="libToggleColl('${c.id}')"><span class="cn">${c.name}</span><span class="cc">${c.texts.length} Fragen ${open?'▾':'▸'}</span></div>${open?`<div class="cq">${c.texts.map(t=>`<div class="cqi">${t}</div>`).join('')}</div>`:''}</div>`;}).join('');
+    host.innerHTML=html;return;
+  }
+  const list=curList();
+  html+=`<div class="libhint">${L.tab==='liked'?'Alle Fragen, die du nach rechts geswipt hast.':'Fragen, die du dir gemerkt oder aus Videos gespeichert hast.'}</div>`;
+  if(!list.length){html+=L.tab==='liked'?`<div class="libempty">Noch nichts gemocht.<br>Swipe eine Frage nach rechts.</div>`:`<div class="libempty">Noch nichts gemerkt.<br>Swipe nach oben oder speichere aus einem Video.</div>`;host.innerHTML=html;return;}
+  if(!L.sel)html+=`<div class="libactions"><span class="grow">${list.length} Fragen</span><button class="minibtn" onclick="libSelMode(true)">Auswählen</button></div>`;
+  else html+=`<div class="libactions"><button class="minibtn" onclick="libSelMode(false)">Abbrechen</button><span class="grow" style="text-align:center">${L.picked.size} gewählt</span><button class="minibtn prim" ${L.picked.size?'':'disabled'} onclick="libStartName()">Liste anlegen</button></div>`;
+  if(L.naming)html+=`<div class="namebox"><span class="nl">Wie soll die Liste heißen?</span><div class="namerow"><input type="text" id="collName" placeholder="z. B. Erstes Date · Roadtrip · Team-Retro" /><button class="minibtn prim" onclick="libCreate()">Speichern</button></div><span class="hint">Die Fragen bleiben in „${L.tab==='liked'?'Mag ich':'Gemerkt'}".</span></div>`;
+  html+='<div class="qlist">'+list.map((q,i)=>{const on=L.picked.has(q.text);return `<div class="qrow ${L.sel?'sel':''} ${on?'on':''}" ${L.sel?`onclick="libPick(${i})"`:''}>${L.sel?`<span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span>`:''}<div class="qrowmain"><div class="qt">${q.text}</div><div class="qmini">${TONE_L[q.tone]||q.tone}</div></div>${L.sel?'':`<button class="qperson" onclick="libAssignPerson(${i})" title="Einer Person zuordnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.2"/><path d="M4 19c0-3.3 2.7-5.5 6-5.5 1 0 1.9.2 2.7.5"/><path d="M18 15v6M15 18h6"/></svg></button>`}</div>`;}).join('')+'</div>';
+  host.innerHTML=html;
+}
+window.libTab=t=>{S.lib.tab=t;S.lib.sel=false;S.lib.naming=false;S.lib.picked.clear();renderLibrary();};
+window.libSelMode=v=>{S.lib.sel=v;S.lib.naming=false;S.lib.picked.clear();renderLibrary();};
+window.libPick=i=>{const t=curList()[i].text;S.lib.picked.has(t)?S.lib.picked.delete(t):S.lib.picked.add(t);renderLibrary();};
+window.libStartName=()=>{if(!S.lib.picked.size)return;S.lib.naming=true;renderLibrary();setTimeout(()=>$('#collName')?.focus(),50);};
+window.libCreate=()=>{const name=($('#collName')?.value||'').trim()||`Sammlung ${S.collections.length+1}`;const texts=curList().filter(q=>S.lib.picked.has(q.text)).map(q=>q.text);S.collections.unshift({id:'c'+Date.now(),name,texts});toast(`„${name}" mit ${texts.length} Fragen angelegt`);S.lib.sel=false;S.lib.naming=false;S.lib.picked.clear();S.lib.tab='collections';renderLibrary();};
+window.libToggleColl=id=>{S.lib.openColl=S.lib.openColl===id?null:id;renderLibrary();};
+window.libAssignPerson=i=>{openPersonModal(curList()[i].text);};
+
+/* START */
+window.resetAll=()=>{if(confirm('Prototyp zurücksetzen?'))location.reload();};
+function boot(){
+  $('#introSteps').innerHTML=Array.from({length:CALIB_N},(_,i)=>`<i class="${i===0?'on':''}"></i>`).join('');
+  $('#timeLab').textContent='◑ Modus 2 · Für deine Gespräche';
+  updateLibBadge();
+}
+S=fresh(); boot();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js');
+    });
+  }
+</script>
+</body>
+</html>

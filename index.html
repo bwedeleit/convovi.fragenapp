@@ -398,7 +398,6 @@ body.work .pfedit{background:var(--panel);color:var(--ink)}
     </div>
   </section>
   <div class="wrap" id="wrap">
-  <header class="top"><div class="logo">CONVOVI<small>fragen</small></div></header>
 
   <!-- ═══ KALIBRIERUNG: INTRO ═══ -->
   <section class="screen hidden" id="calibIntro">
@@ -544,32 +543,35 @@ function hideAllScreens(){
   });
 }
 
-let routedIn=false;
+let routedIn=false, loginShown=false;
 async function initAuth(){
-  // Primär: auf den Auth-Zustand reagieren (feuert beim Laden zuverlässig)
-  sb.auth.onAuthStateChange((_event, session)=>routeAuth(session));
-  // Fallback, falls das Event mal nicht früh genug kommt:
-  try{ const { data:{ session } } = await sb.auth.getSession(); routeAuth(session); }
+  // Auf den Auth-Zustand reagieren. INITIAL_SESSION feuert einmal,
+  // SOBALD Supabase die Session aus dem Speicher wiederhergestellt hat.
+  sb.auth.onAuthStateChange((event, session)=>{
+    if(session){ routeIn(session); }
+    else if(event==='INITIAL_SESSION' || event==='SIGNED_OUT'){ showLogin(); }
+  });
+  // Schnellstart, falls die Session schon bereit ist — zeigt NIE den Login.
+  try{ const { data:{ session } } = await sb.auth.getSession(); if(session) routeIn(session); }
   catch(e){ console.error('getSession', e); }
 }
 
-async function routeAuth(session){
-  if(session){
-    if(routedIn) return;            // schon eingeloggt-geroutet, nichts doppelt tun
-    routedIn=true; currentUser=session.user;
-    try{ await onLoggedIn(); }
-    catch(e){
-      console.error('Login-Routing fehlgeschlagen', e);
-      // Trotzdem in die App lassen, statt am orangen Bildschirm hängen zu bleiben:
-      hideAllScreens();
-      document.getElementById('main').classList.contains('hidden')
-        && document.getElementById('calibIntro').classList.remove('hidden');
-    }
-  } else {
-    if(routedIn) return;
+function routeIn(session){
+  if(routedIn) return;               // nur einmal einloggen-routen
+  routedIn=true; currentUser=session.user;
+  onLoggedIn().catch(e=>{
+    console.error('Login-Routing fehlgeschlagen', e);
+    // Trotzdem in die App lassen, statt hängen zu bleiben:
     hideAllScreens();
-    document.getElementById('login').classList.remove('hidden');
-  }
+    document.getElementById('calibIntro').classList.remove('hidden');
+  });
+}
+
+function showLogin(){
+  if(routedIn || loginShown) return; // nicht zeigen, wenn schon eingeloggt-geroutet
+  loginShown=true;
+  hideAllScreens();
+  document.getElementById('login').classList.remove('hidden');
 }
 
 async function sendMagicLink(){
@@ -677,22 +679,28 @@ function startMainDirect(){
 }
 
 // ═══════════ SWIPES + BIBLIOTHEK ═══════════
+let swipeSaveWarned=false;
 async function recordSwipe(q, re){
   if(!currentUser) return;
   const reaction = re==='like' ? 'like' : re==='skip' ? 'nope' : re==='save' ? 'save' : null;
   if(!reaction) return;
-  await sb.from('swipes').insert({
+  const { error } = await sb.from('swipes').insert({
     user_id: currentUser.id,
     question_text: q.text,
     reaction,
     source: q.src==='generiert' ? 'generated' : 'curated'
   });
+  if(error){
+    console.error('recordSwipe/swipes', error);
+    if(!swipeSaveWarned){ swipeSaveWarned=true; toast('Swipe-Speichern fehlgeschlagen: '+error.message); }
+  }
   if(reaction==='like' || reaction==='save'){
-    await sb.from('saved_questions').upsert({
+    const { error:e2 } = await sb.from('saved_questions').upsert({
       user_id: currentUser.id,
       question_text: q.text,
       list_type: reaction==='like' ? 'liked' : 'saved'
     }, { onConflict: 'user_id,question_text,list_type' });
+    if(e2) console.error('recordSwipe/saved_questions', e2);
   }
 }
 

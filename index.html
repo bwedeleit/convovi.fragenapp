@@ -13,7 +13,7 @@
   </script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Convovi · Frag-O-Mat</title>
+<title>Convovi · fragen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -398,7 +398,7 @@ body.work .pfedit{background:var(--panel);color:var(--ink)}
     </div>
   </section>
   <div class="wrap" id="wrap">
-  <header class="top"><div class="logo">CONVOVI<small>frag-o-mat</small></div></header>
+  <header class="top"><div class="logo">CONVOVI<small>fragen</small></div></header>
 
   <!-- ═══ KALIBRIERUNG: INTRO ═══ -->
   <section class="screen hidden" id="calibIntro">
@@ -570,8 +570,13 @@ async function logout(){ await sb.auth.signOut(); location.reload(); }
 
 // Wird nach erfolgreichem Login aufgerufen — füllt sich in den nächsten Etappen:
 async function onLoggedIn(){
-  hideAllScreens();
-  document.getElementById('calibIntro').classList.remove('hidden'); // vorläufig
+  const hasProfile = await loadProfile();
+  if(hasProfile){
+    startMainDirect();          // schon kalibriert → direkt zu den Fragen
+  } else {
+    hideAllScreens();
+    document.getElementById('calibIntro').classList.remove('hidden'); // Erstnutzer
+  }
 }
 const fresh=()=>({
   role:'close',group:'solo',setting:'-',
@@ -595,6 +600,45 @@ function toastAction(msg,label,cb){
   t.innerHTML=`<span>${msg}</span><button class="toastbtn">${label}</button>`;
   t.querySelector('.toastbtn').onclick=()=>{clearTimeout(toastT);t.classList.remove('show');cb();};
   t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),4200);
+}
+// ═══════════ PROFIL SPEICHERN / LADEN ═══════════
+async function saveProfile(){
+  if(!currentUser || !S.profile) return;
+  await sb.from('profiles').upsert({
+    user_id: currentUser.id,
+    personality_text: S.profile.bild,
+    personality_traits: S.profile.worte || [],
+    personalize: S.personalize,
+    allow_generation: S.allowGen,
+    personality_built_at: new Date().toISOString()
+  });
+}
+
+async function loadProfile(){
+  const { data } = await sb.from('profiles')
+    .select('*').eq('user_id', currentUser.id).maybeSingle();
+  if(data && data.personality_text){
+    S.profile = { bild: data.personality_text, worte: data.personality_traits || [] };
+    S.personalize = data.personalize ?? true;
+    S.allowGen   = data.allow_generation ?? true;
+    return true;
+  }
+  return false;
+}
+
+// Zeigt die Haupt-App direkt in Modus 2 (ohne Kalibrierung)
+function startMainDirect(){
+  hideAllScreens();
+  document.body.classList.remove('calib');
+  document.getElementById('main').classList.remove('hidden');
+  S.mode='main';
+  document.getElementById('calibBar').classList.add('hidden');
+  document.getElementById('pbarMain').classList.remove('hidden');
+  document.getElementById('bnav').classList.remove('hidden');
+  document.getElementById('calibLabels').classList.add('hidden');
+  document.getElementById('actsMain').classList.remove('hidden');
+  document.getElementById('mainNote').textContent='Fragen für deine Gespräche — rechts = mag ich, links = nö.';
+  S.pool=[]; setView('foryou'); refill();
 }
 
 /* ═══════════ KALIBRIERUNG ═══════════ */
@@ -674,6 +718,7 @@ Antworte NUR mit JSON, ohne Backticks:
     // Fallback ohne API: aus den Antworten simpel zusammensetzen
     S.profile={bild:'Wir haben deine ersten Vorlieben erfasst.',worte:S.calibAnswers.slice(0,3).map(a=>a.dim)};
   }
+  await saveProfile();
 }
 
 /* ═══════════ AUSWAHL (ohne Tiefe) ═══════════ */
@@ -1162,7 +1207,7 @@ function renderSelf(){
   // Editierbares Persönlichkeitsbild
   if(S.profile){
     html+=`<div class="selfquote"><div class="lab">Aus dem Kennenlernen · antippen zum Ändern</div>
-      <textarea id="pfBild" class="pfedit" rows="3" oninput="S.profile.bild=this.value">${S.profile.bild}</textarea>
+      <textarea id="pfBild" class="pfedit" rows="3" oninput="S.profile.bild=this.value;saveProfile()">${S.profile.bild}</textarea>
       <div class="pfworte" id="pfWorte">${(S.profile.worte||[]).map((w,i)=>`<span class="wchip">${w}<b onclick="rmWort(${i})">×</b></span>`).join('')}
         <input type="text" id="pfAdd" placeholder="+ Wort" onkeydown="if(event.key==='Enter'){addWort(this.value);this.value='';}" /></div>
     </div>`;
@@ -1191,9 +1236,9 @@ function renderSelf(){
   </div>`;
   $('#selfBody').innerHTML=html;
 }
-window.toggleP=k=>{S[k]=!S[k];S.pool=[];renderSelf();refill();toast((k==='personalize'?'Personalisierung ':'KI-Fragen ')+(S[k]?'an':'aus'));};
-window.rmWort=i=>{S.profile.worte.splice(i,1);renderSelf();};
-window.addWort=v=>{v=v.trim();if(v&&S.profile){(S.profile.worte=S.profile.worte||[]).push(v);renderSelf();}};
+window.toggleP=k=>{S[k]=!S[k];S.pool=[];renderSelf();refill();toast((k==='personalize'?'Personalisierung ':'KI-Fragen ')+(S[k]?'an':'aus'));saveProfile();};
+window.rmWort=i=>{S.profile.worte.splice(i,1);renderSelf();saveProfile();};
+window.addWort=v=>{v=v.trim();if(v&&S.profile){(S.profile.worte=S.profile.worte||[]).push(v);renderSelf();saveProfile();}};
 window.deleteProfile=()=>{
   if(!confirm('Dein Profil und alle gelernten Daten löschen? Das kann nicht rückgängig gemacht werden.'))return;
   S.profile=null;S.sketches={};S.reactions=[];S.liked=[];S.saved=[];S.collections=[];S.persons=[];S.calibAnswers=[];

@@ -378,11 +378,30 @@ body.work .pfedit{background:var(--panel);color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="wrap" id="wrap">
+  <section class="screen hidden" id="login">
+    <div class="picto">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 14h32a2 2 0 0 1 2 2v18a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V16a2 2 0 0 1 2-2z"/>
+        <path d="M7 16l17 12 17-12"/>
+      </svg>
+    </div>
+    <div id="loginForm">
+      <h1>Willkommen bei<br>Convovi Fragen</h1>
+      <p>Gib deine E-Mail ein — du bekommst einen Link zum Einloggen. Kein Passwort nötig.</p>
+      <input type="email" id="loginEmail" placeholder="deine@email.de"
+        style="width:100%;padding:14px 16px;border:1px solid var(--line);border-radius:14px;font-size:15px;margin-bottom:12px;outline:none" />
+      <button class="bigbtn" onclick="sendMagicLink()">Link schicken</button>
+    </div>
+    <div id="loginSent" class="hidden">
+      <h1>Check deine<br>E-Mails</h1>
+      <p>Wir haben dir einen Login-Link geschickt. Öffne ihn auf diesem Gerät, dann geht's los.</p>
+    </div>
+  </section>
+  <div class="wrap" id="wrap">
   <header class="top"><div class="logo">CONVOVI<small>frag-o-mat</small></div></header>
 
   <!-- ═══ KALIBRIERUNG: INTRO ═══ -->
-  <section class="screen" id="calibIntro">
+  <section class="screen hidden" id="calibIntro">
     <div class="picto">
       <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
         <path d="M8 12h22a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H18l-7 5v-5H8a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3z"/>
@@ -515,6 +534,45 @@ const MODEL='claude-sonnet-4-6';
 const GEN_TARGET=12, REFILL_AT=5, SKETCH_EVERY=12, GEN_SHARE=0.35, CALIB_N=10;
 
 let S=null;
+// ═══════════ LOGIN / AUTH ═══════════
+const sb = window.supabase;
+let currentUser = null;
+
+function hideAllScreens(){
+  ['login','calibIntro','calibDone','main'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.classList.add('hidden');
+  });
+}
+
+async function initAuth(){
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session){ currentUser = session.user; await onLoggedIn(); }
+  else { hideAllScreens(); document.getElementById('login').classList.remove('hidden'); }
+
+  sb.auth.onAuthStateChange((_event, session)=>{
+    if(session && !currentUser){ currentUser = session.user; onLoggedIn(); }
+  });
+}
+
+async function sendMagicLink(){
+  const email = document.getElementById('loginEmail').value.trim();
+  if(!email){ toast('Bitte E-Mail eingeben'); return; }
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.origin }
+  });
+  if(error){ toast('Fehler: '+error.message); return; }
+  document.getElementById('loginForm').classList.add('hidden');
+  document.getElementById('loginSent').classList.remove('hidden');
+}
+
+async function logout(){ await sb.auth.signOut(); location.reload(); }
+
+// Wird nach erfolgreichem Login aufgerufen — füllt sich in den nächsten Etappen:
+async function onLoggedIn(){
+  hideAllScreens();
+  document.getElementById('calibIntro').classList.remove('hidden'); // vorläufig
+}
 const fresh=()=>({
   role:'close',group:'solo',setting:'-',
   sketches:{},pool:[],seen:[],reactions:[],
@@ -1188,6 +1246,7 @@ function boot(){
   $('#introSteps').innerHTML=Array.from({length:CALIB_N},(_,i)=>`<i class="${i===0?'on':''}"></i>`).join('');
   $('#timeLab').textContent='◑ Modus 2 · Für deine Gespräche';
   updateLibBadge();
+  initAuth();
 }
 S=fresh(); boot();
 </script>

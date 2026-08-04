@@ -619,6 +619,10 @@ async function saveProfile(){
 async function loadProfile(){
   const { data } = await sb.from('profiles')
     .select('*').eq('user_id', currentUser.id).maybeSingle();
+  if(data){
+    if(Array.isArray(data.persons_data))     S.persons     = data.persons_data;
+    if(Array.isArray(data.collections_data)) S.collections = data.collections_data;
+  }
   if(data && data.personality_text){
     S.profile = { bild: data.personality_text, worte: data.personality_traits || [] };
     S.personalize = data.personalize ?? true;
@@ -626,6 +630,16 @@ async function loadProfile(){
     return true;
   }
   return false;
+}
+
+// Personen & Sammlungen als Ganzes im Profil sichern
+async function savePersons(){
+  if(!currentUser) return;
+  await sb.from('profiles').upsert({ user_id: currentUser.id, persons_data: S.persons });
+}
+async function saveCollections(){
+  if(!currentUser) return;
+  await sb.from('profiles').upsert({ user_id: currentUser.id, collections_data: S.collections });
 }
 
 // Zeigt die Haupt-App direkt in Modus 2 (ohne Kalibrierung)
@@ -1110,11 +1124,11 @@ function openSaveTarget(text){
     const t=el.dataset.t;
     if(t==='__new'){$('#newCollBox').classList.remove('hidden');$('#newCollName').focus();
       $('#newCollSave').onclick=()=>{const nm=$('#newCollName').value.trim()||`Sammlung ${S.collections.length+1}`;
-        const c={id:'c'+Date.now(),name:nm,texts:[S.saveTarget]};S.collections.unshift(c);closeModal('mdSave');afterSave(`„${nm}" angelegt`);};
+        const c={id:'c'+Date.now(),name:nm,texts:[S.saveTarget]};S.collections.unshift(c);saveCollections();closeModal('mdSave');afterSave(`„${nm}" angelegt`);};
       return;}
     if(t==='__fav'){if(!S.liked.some(q=>q.text===S.saveTarget))S.liked.unshift(mkQ(S.saveTarget));afterSave('Zu „Mag ich" gespeichert');}
     else if(t==='__saved'){if(!S.saved.some(q=>q.text===S.saveTarget))S.saved.unshift(mkQ(S.saveTarget));afterSave('Zu „Gemerkt" gespeichert');}
-    else if(t.startsWith('__c:')){const c=S.collections.find(x=>x.id===t.slice(4));if(c&&!c.texts.includes(S.saveTarget))c.texts.push(S.saveTarget);afterSave(`Zu „${c.name}" hinzugefügt`);}
+    else if(t.startsWith('__c:')){const c=S.collections.find(x=>x.id===t.slice(4));if(c&&!c.texts.includes(S.saveTarget))c.texts.push(S.saveTarget);saveCollections();afterSave(`Zu „${c.name}" hinzugefügt`);}
     closeModal('mdSave');
   });
   openModal('mdSave');
@@ -1195,14 +1209,15 @@ function renderPersonModal(){
     $('#remSave').onclick=()=>{
       const dv=$('#remDate').value;
       const when=dv?new Date(dv).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'ohne Zeitpunkt';
-      p.reminders.push({type:'push',note:S.personQ,when});
+      p.reminders.push({type:'push',note:S.personQ,when,whenRaw:dv||null});
+      savePersons();
       toast(`Push-Erinnerung gesetzt · ${when}`);
       closeModal('mdPerson');
     };
     $('#personDone').onclick=()=>closeModal('mdPerson');
   }
 }
-function choosePerson(id){const p=S.persons.find(x=>x.id===id);if(!p.questions.includes(S.personQ))p.questions.push(S.personQ);S.personPick=id;S.personStage='reminder';renderPersonModal();updateLibBadge();toast(`Frage für ${p.name} gespeichert`);}
+function choosePerson(id){const p=S.persons.find(x=>x.id===id);if(!p.questions.includes(S.personQ))p.questions.push(S.personQ);S.personPick=id;S.personStage='reminder';renderPersonModal();updateLibBadge();savePersons();toast(`Frage für ${p.name} gespeichert`);}
 function createPerson(){
   const nm=($('#personName')?.value||'').trim(); if(!nm){$('#personName').focus();return;}
   const p={id:'p'+Date.now(),name:nm,relation:S.personRel,questions:[],reminders:[]};
@@ -1294,8 +1309,14 @@ function renderSelf(){
 window.toggleP=k=>{S[k]=!S[k];S.pool=[];renderSelf();refill();toast((k==='personalize'?'Personalisierung ':'KI-Fragen ')+(S[k]?'an':'aus'));saveProfile();};
 window.rmWort=i=>{S.profile.worte.splice(i,1);renderSelf();saveProfile();};
 window.addWort=v=>{v=v.trim();if(v&&S.profile){(S.profile.worte=S.profile.worte||[]).push(v);renderSelf();saveProfile();}};
-window.deleteProfile=()=>{
+window.deleteProfile=async()=>{
   if(!confirm('Dein Profil und alle gelernten Daten löschen? Das kann nicht rückgängig gemacht werden.'))return;
+  if(currentUser){
+    await sb.from('preference_sketches').delete().eq('user_id', currentUser.id);
+    await sb.from('swipes').delete().eq('user_id', currentUser.id);
+    await sb.from('saved_questions').delete().eq('user_id', currentUser.id);
+    await sb.from('profiles').delete().eq('user_id', currentUser.id);
+  }
   S.profile=null;S.sketches={};S.reactions=[];S.liked=[];S.saved=[];S.collections=[];S.persons=[];S.calibAnswers=[];
   S.swipes=0;S.likes=0;logs=[];updateLibBadge();
   toast('Profil gelöscht');closeModal('mdSelf');
@@ -1336,7 +1357,7 @@ window.libTab=t=>{S.lib.tab=t;S.lib.sel=false;S.lib.naming=false;S.lib.picked.cl
 window.libSelMode=v=>{S.lib.sel=v;S.lib.naming=false;S.lib.picked.clear();renderLibrary();};
 window.libPick=i=>{const t=curList()[i].text;S.lib.picked.has(t)?S.lib.picked.delete(t):S.lib.picked.add(t);renderLibrary();};
 window.libStartName=()=>{if(!S.lib.picked.size)return;S.lib.naming=true;renderLibrary();setTimeout(()=>$('#collName')?.focus(),50);};
-window.libCreate=()=>{const name=($('#collName')?.value||'').trim()||`Sammlung ${S.collections.length+1}`;const texts=curList().filter(q=>S.lib.picked.has(q.text)).map(q=>q.text);S.collections.unshift({id:'c'+Date.now(),name,texts});toast(`„${name}" mit ${texts.length} Fragen angelegt`);S.lib.sel=false;S.lib.naming=false;S.lib.picked.clear();S.lib.tab='collections';renderLibrary();};
+window.libCreate=()=>{const name=($('#collName')?.value||'').trim()||`Sammlung ${S.collections.length+1}`;const texts=curList().filter(q=>S.lib.picked.has(q.text)).map(q=>q.text);S.collections.unshift({id:'c'+Date.now(),name,texts});saveCollections();toast(`„${name}" mit ${texts.length} Fragen angelegt`);S.lib.sel=false;S.lib.naming=false;S.lib.picked.clear();S.lib.tab='collections';renderLibrary();};
 window.libToggleColl=id=>{S.lib.openColl=S.lib.openColl===id?null:id;renderLibrary();};
 window.libAssignPerson=i=>{openPersonModal(curList()[i].text);};
 

@@ -535,7 +535,7 @@ const GEN_TARGET=12, REFILL_AT=5, SKETCH_EVERY=12, GEN_SHARE=0.35, CALIB_N=10;
 
 let S=null;
 // ═══════════ LOGIN / AUTH ═══════════
-const sb = window.supabase;
+let sb = null;
 let currentUser = null;
 
 function hideAllScreens(){
@@ -1248,7 +1248,12 @@ function boot(){
   updateLibBadge();
   initAuth();
 }
-S=fresh(); boot();
+function startApp(){ S=fresh(); boot(); }
+// Auf den Supabase-Client warten, der im <head>-Modul verzögert geladen wird
+(function waitForSupabase(){
+  if(window.supabase){ sb = window.supabase; startApp(); }
+  else setTimeout(waitForSupabase, 30);
+})();
 </script>
 <script>
   if ('serviceWorker' in navigator) {

@@ -46,6 +46,7 @@ svg{display:block}
 .wrap{max-width:480px;margin:0 auto;padding:18px 18px 30px}
 
 header.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.topspacer{min-height:42px}
 .logo{font-family:var(--grotesk);font-weight:800;font-size:22px;letter-spacing:.02em;color:var(--onTerra);text-transform:uppercase}
 .logo small{display:block;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.7);letter-spacing:.05em;font-weight:400;margin-top:2px;text-transform:none}
 body.work .logo{color:var(--terra)} body.work .logo small{color:rgba(245,128,92,.7)}
@@ -398,6 +399,7 @@ body.work .pfedit{background:var(--panel);color:var(--ink)}
     </div>
   </section>
   <div class="wrap" id="wrap">
+  <header class="top topspacer"></header>
 
   <!-- ═══ KALIBRIERUNG: INTRO ═══ -->
   <section class="screen hidden" id="calibIntro">
@@ -592,6 +594,7 @@ async function onLoggedIn(){
   const hasProfile = await loadProfile();
   try{ await loadLibrary(); }catch(e){ console.error('loadLibrary', e); }
   try{ await loadSketch();  }catch(e){ console.error('loadSketch', e); }
+  try{ await loadSwipeStats(); }catch(e){ console.error('loadSwipeStats', e); }
   if(hasProfile){
     startMainDirect();          // schon kalibriert → direkt zu den Fragen
   } else {
@@ -608,12 +611,12 @@ const fresh=()=>({
   lib:{tab:'liked',sel:false,picked:new Set(),naming:false,openColl:null},
   videoOpen:null, saveTarget:null, vTab:'videos', pOpen:null,
   personQ:null, personPick:null, personStage:'pick', personNewOpen:false, personRel:'friend',
-  swipes:0,likes:0,cost:0,calls:0,generating:false,lastPrompt:null,
+  swipes:0,likes:0,swipesTotal:0,cost:0,calls:0,generating:false,lastPrompt:null,
 });
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const roleOf=k=>ROLES.find(r=>r.k===k);
 const nowSlot=()=>{const h=new Date().getHours();return h<11?'Morgen':h<15?'Mittag':h<18?'Nachmittag':h<23?'Abend':'späte Nacht';};
-let logs=[]; function log(kind,ic,txt){logs.unshift({kind,ic,txt});if(logs.length>16)logs.pop();renderSelfIfOpen();}
+let logs=[]; function log(kind,ic,txt){logs.unshift({kind,ic,txt});if(logs.length>40)logs.pop();renderSelfIfOpen();}
 let toastT=null;
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1800);}
 function toastAction(msg,label,cb){
@@ -732,6 +735,25 @@ async function loadSketch(){
     .select('*').eq('user_id', currentUser.id).maybeSingle();
   if(data && data.sketch_text){
     S.sketches[S.role] = { text: data.sketch_text, tones: data.tone_weights || null };
+  }
+}
+
+// Gesamtzahl der Swipes + Verlauf vergangener Sitzungen laden
+async function loadSwipeStats(){
+  if(!currentUser) return;
+  const { count } = await sb.from('swipes')
+    .select('*', { count:'exact', head:true }).eq('user_id', currentUser.id);
+  S.swipesTotal = count || 0;
+  const { data } = await sb.from('swipes')
+    .select('reaction,question_text,created_at')
+    .eq('user_id', currentUser.id)
+    .order('created_at', { ascending:false }).limit(40);
+  if(data){
+    logs = data.map(r=>({
+      kind: r.reaction==='nope' ? 'skip' : r.reaction,
+      ic:   r.reaction==='like' ? '♥' : r.reaction==='nope' ? '✕' : '★',
+      txt:  r.question_text
+    }));
   }
 }
 
@@ -1061,7 +1083,7 @@ async function commit(q,re){
     if(S.calibDone>=CALIB_N){setTimeout(finishCalibration,320);return;}
     setTimeout(renderDeck,290); return;
   }
-  S.swipes++; if(re!=='skip')S.likes++;
+  S.swipes++; S.swipesTotal++; if(re!=='skip')S.likes++;
   S.seen.push(q.text); S.reactions.push({role:S.role,re,q});
   if(re==='like'){if(!S.liked.some(x=>x.text===q.text))S.liked.unshift({...q});}
   if(re==='save'){if(!S.saved.some(x=>x.text===q.text))S.saved.unshift({...q}); toastAction('Gemerkt','+ Person zuordnen',()=>openPersonModal(q.text));}
@@ -1295,7 +1317,7 @@ function insightRows(){
   return rows;
 }
 function renderSelf(){
-  $('#selfSub').textContent=`${S.reactions.length} Swipes · dein Profil`;
+  $('#selfSub').textContent=`${S.swipesTotal} Swipes insgesamt · dein Profil`;
   const sk=S.sketches[S.role];let html='';
 
   // Steuerung: Personalisierung an/aus, KI-Fragen an/aus
@@ -1350,7 +1372,7 @@ window.deleteProfile=async()=>{
     await sb.from('profiles').delete().eq('user_id', currentUser.id);
   }
   S.profile=null;S.sketches={};S.reactions=[];S.liked=[];S.saved=[];S.collections=[];S.persons=[];S.calibAnswers=[];
-  S.swipes=0;S.likes=0;logs=[];updateLibBadge();
+  S.swipes=0;S.likes=0;S.swipesTotal=0;logs=[];updateLibBadge();
   toast('Profil gelöscht');closeModal('mdSelf');
 };
 function renderSelfIfOpen(){if($('#mdSelf').classList.contains('open'))renderSelf();}

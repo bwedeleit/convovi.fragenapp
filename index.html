@@ -641,6 +641,36 @@ function startMainDirect(){
   S.pool=[]; setView('foryou'); refill();
 }
 
+// ═══════════ SWIPES + BIBLIOTHEK ═══════════
+async function recordSwipe(q, re){
+  if(!currentUser) return;
+  const reaction = re==='like' ? 'like' : re==='skip' ? 'nope' : re==='save' ? 'save' : null;
+  if(!reaction) return;
+  await sb.from('swipes').insert({
+    user_id: currentUser.id,
+    question_text: q.text,
+    reaction,
+    source: q.src==='generiert' ? 'generated' : 'curated'
+  });
+  if(reaction==='like' || reaction==='save'){
+    await sb.from('saved_questions').upsert({
+      user_id: currentUser.id,
+      question_text: q.text,
+      list_type: reaction==='like' ? 'liked' : 'saved'
+    }, { onConflict: 'user_id,question_text,list_type' });
+  }
+}
+
+async function loadLibrary(){
+  const { data } = await sb.from('saved_questions')
+    .select('question_text,list_type').eq('user_id', currentUser.id);
+  if(data){
+    S.liked = data.filter(r=>r.list_type==='liked').map(r=>({ text:r.question_text }));
+    S.saved = data.filter(r=>r.list_type==='saved').map(r=>({ text:r.question_text }));
+    updateLibBadge();
+  }
+}
+
 /* ═══════════ KALIBRIERUNG ═══════════ */
 /* 10 Kennenlern-Fragen als Entweder-oder — links = A, rechts = B */
 /* 10 Kennenlern-Aussagen — rechts = stimmt, links = stimmt nicht */
@@ -966,6 +996,7 @@ async function commit(q,re){
   if(re==='like'){if(!S.liked.some(x=>x.text===q.text))S.liked.unshift({...q});}
   if(re==='save'){if(!S.saved.some(x=>x.text===q.text))S.saved.unshift({...q}); toastAction('Gemerkt','+ Person zuordnen',()=>openPersonModal(q.text));}
   updateLibBadge();
+  recordSwipe(q, re);
   S.pool.shift();
   log(re,re==='like'?'♥':re==='skip'?'✕':'★',q.text);
   setTimeout(renderDeck,290); renderSelfIfOpen();

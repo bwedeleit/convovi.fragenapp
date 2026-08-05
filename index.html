@@ -4,9 +4,9 @@
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#f5805c" />
   <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-  <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-    window.supabase = createClient(
+  <script src="/supabase.js"></script>
+  <script>
+    window.supabase = supabase.createClient(
       'https://zhkteqffnnqeaxsefniz.supabase.co',   // deine Project URL
       'sb_publishable_m_z6hfF8D5u1qWDsRhOEUA_c_0an6QQ'                        // dein anon public key (darf offen sein)
     );
@@ -205,6 +205,9 @@ body.work .vrow{background:#3d372f}
 .vthumb svg{width:24px;height:24px}
 .vthumb img{width:100%;height:100%;object-fit:cover}
 .vdel{flex:none;width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:transparent;color:var(--faint);display:grid;place-items:center;transition:.14s}
+.vedit{flex:none;width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:transparent;color:var(--terra);display:grid;place-items:center;transition:.14s;margin-right:6px}
+.vedit:hover{background:var(--terra);color:#fff;border-color:var(--terra)}
+.vedit svg{width:15px;height:15px}
 .vdel:hover{background:var(--nope);color:#fff;border-color:var(--nope)}
 .vdel svg{width:15px;height:15px}
 .adminadd{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-bottom:14px;padding:11px;border:1.5px dashed var(--terra);border-radius:14px;background:var(--accsoft);color:var(--terra-deep);font-size:13.5px;font-weight:700;cursor:pointer}
@@ -616,7 +619,7 @@ html{-webkit-text-size-adjust:100%;touch-action:manipulation}
   </div></div></div></div>
 
 <div class="backdrop" id="mdAdmin"><div class="sheet">
-  <div class="shead"><div><h2>Neues Fragen-Set</h2><p>Nur für dich sichtbar</p></div><button class="xbtn" data-close="mdAdmin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="shead"><div><h2 id="adminTitle">Neues Fragen-Set</h2><p>Nur für dich sichtbar</p></div><button class="xbtn" data-close="mdAdmin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <div class="sbody">
     <div class="adminform">
       <label class="afl">Thumbnail (vom Handy)</label>
@@ -663,20 +666,29 @@ async function loadVideoSets(){
 const isAdmin = ()=> currentUser && currentUser.email === ADMIN_EMAIL;
 
 // ═══════════ ADMIN: neue Fragen-Sets ═══════════
-let adminThumbFile=null;
+let adminThumbFile=null, adminEditId=null, adminExistingThumb='';
 const MAX_Q=10;
-function adminRenderQuestions(count){
+function adminRenderQuestions(qs){
   const host=document.getElementById('adQuestions'); if(!host)return;
   host.innerHTML='';
-  for(let i=0;i<count;i++){
-    const row=document.createElement('div'); row.className='adqrow';
-    row.innerHTML=`<textarea class="afi adq" rows="2" placeholder="Frage ${i+1}${i===0?'':' (optional)'}"></textarea>`+
-      (i>0?`<button class="adqdel" title="Frage entfernen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`:'');
-    host.appendChild(row);
-    const del=row.querySelector('.adqdel');
-    if(del) del.onclick=()=>{ row.remove(); adminSyncAddBtn(); };
-  }
+  const list = (qs&&qs.length)?qs:[''];
+  list.slice(0,MAX_Q).forEach((val,i)=>adminAddQRow(val, i));
   adminSyncAddBtn();
+}
+function adminAddQRow(val, i){
+  const host=document.getElementById('adQuestions'); if(!host)return;
+  const idx = (typeof i==='number') ? i : host.querySelectorAll('.adq').length;
+  const row=document.createElement('div'); row.className='adqrow';
+  const ta=document.createElement('textarea'); ta.className='afi adq'; ta.rows=2;
+  ta.placeholder=`Frage ${idx+1}${idx===0?'':' (optional)'}`; ta.value=val||'';
+  row.appendChild(ta);
+  if(idx>0){
+    const del=document.createElement('button'); del.className='adqdel'; del.title='Frage entfernen';
+    del.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    del.onclick=()=>{ row.remove(); adminSyncAddBtn(); };
+    row.appendChild(del);
+  }
+  host.appendChild(row);
 }
 function adminSyncAddBtn(){
   const host=document.getElementById('adQuestions'); const btn=document.getElementById('adAddQ');
@@ -685,27 +697,29 @@ function adminSyncAddBtn(){
 window.adminAddQuestion=()=>{
   const host=document.getElementById('adQuestions'); if(!host)return;
   if(host.querySelectorAll('.adq').length>=MAX_Q)return;
-  const i=host.querySelectorAll('.adq').length;
-  const row=document.createElement('div'); row.className='adqrow';
-  row.innerHTML=`<textarea class="afi adq" rows="2" placeholder="Frage ${i+1} (optional)"></textarea><button class="adqdel" title="Frage entfernen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`;
-  host.appendChild(row);
-  row.querySelector('.adqdel').onclick=()=>{ row.remove(); adminSyncAddBtn(); };
+  adminAddQRow('', host.querySelectorAll('.adq').length);
   adminSyncAddBtn();
 };
-window.openAdmin=()=>{
+window.openAdmin=(id)=>{
   if(!isAdmin()){ toast('Nur für Admin'); return; }
-  adminThumbFile=null;
-  ['adTitle','adTag','adIg'].forEach(id=>{const el=document.getElementById(id); if(el)el.value='';});
-  adminRenderQuestions(1);
+  adminThumbFile=null; adminEditId=id||null; adminExistingThumb='';
+  const set = id ? VIDEO_SETS.find(v=>v.id===id) : null;
+  document.getElementById('adminTitle').textContent = set ? 'Set bearbeiten' : 'Neues Fragen-Set';
+  document.getElementById('adTitle').value = set ? (set.title||'') : '';
+  document.getElementById('adTag').value   = set ? (set.tag||'')   : '';
+  document.getElementById('adIg').value    = set ? (set.ig_url||'') : '';
+  adminRenderQuestions(set ? set.qs : ['']);
   const prev=document.getElementById('thumbPrev'), ph=document.getElementById('thumbPlaceholder');
-  if(prev){prev.classList.add('hidden');prev.src='';} if(ph)ph.classList.remove('hidden');
+  if(set && set.thumb_url){ adminExistingThumb=set.thumb_url; prev.src=set.thumb_url; prev.classList.remove('hidden'); ph.classList.add('hidden'); }
+  else { prev.classList.add('hidden'); prev.src=''; ph.classList.remove('hidden'); }
+  document.getElementById('adSave').textContent = set ? 'Änderungen speichern' : 'Set speichern';
   openModal('mdAdmin');
   const f=document.getElementById('thumbFile');
-  if(f) f.onchange=e=>{
+  if(f){ f.value=''; f.onchange=e=>{
     const file=e.target.files[0]; if(!file)return; adminThumbFile=file;
     const url=URL.createObjectURL(file);
     prev.src=url; prev.classList.remove('hidden'); ph.classList.add('hidden');
-  };
+  };}
 };
 window.saveVideoSet=async()=>{
   if(!isAdmin()){ toast('Nur für Admin'); return; }
@@ -713,32 +727,46 @@ window.saveVideoSet=async()=>{
   const qs=[...document.querySelectorAll('#adQuestions .adq')].map(t=>(t.value||'').trim()).filter(Boolean);
   if(!title){ toast('Bitte einen Titel eingeben'); return; }
   if(!qs.length){ toast('Mindestens eine Frage eingeben'); return; }
-  const btn=document.getElementById('adSave'); btn.disabled=true; btn.textContent='Speichere…';
+  const btn=document.getElementById('adSave'); const label=btn.textContent; btn.disabled=true; btn.textContent='Speichere…';
   try{
-    let thumb_url='';
+    let thumb_url=adminExistingThumb;  // im Bearbeiten-Modus altes Bild behalten, falls kein neues gewählt
     if(adminThumbFile){
       const ext=(adminThumbFile.name.split('.').pop()||'jpg').toLowerCase();
       const path=`set-${Date.now()}.${ext}`;
       const up=await sb.storage.from('thumbnails').upload(path, adminThumbFile, { upsert:false });
-      if(up.error) throw up.error;
-      thumb_url=sb.storage.from('thumbnails').getPublicUrl(path).data.publicUrl;
+      if(up.error){
+        // Häufigster Fall: Bucket fehlt. Set trotzdem ohne Bild speichern, klaren Hinweis geben.
+        const msg=(up.error.message||'').toLowerCase();
+        if(msg.includes('bucket')){ toast('Bild übersprungen: Bucket „thumbnails" fehlt in Supabase. Set wird ohne Bild gespeichert.'); }
+        else throw up.error;
+      } else {
+        thumb_url=sb.storage.from('thumbnails').getPublicUrl(path).data.publicUrl;
+      }
     }
-    const { error } = await sb.from('video_sets').insert({
+    const payload={
       title, tag:(document.getElementById('adTag').value||'').trim(),
       ig_url:(document.getElementById('adIg').value||'').trim(),
-      thumb_url, questions:qs, active:true, sort_at:new Date().toISOString()
-    });
+      thumb_url, questions:qs
+    };
+    let error;
+    if(adminEditId){
+      ({ error } = await sb.from('video_sets').update(payload).eq('id', adminEditId));
+    } else {
+      payload.active=true; payload.sort_at=new Date().toISOString();
+      ({ error } = await sb.from('video_sets').insert(payload));
+    }
     if(error) throw error;
-    await loadVideoSets(); closeModal('mdAdmin'); renderVideos(); toast('Set veröffentlicht ✓');
+    await loadVideoSets(); closeModal('mdAdmin'); S.videoOpen=null; renderVideos();
+    toast(adminEditId ? 'Änderungen gespeichert ✓' : 'Set veröffentlicht ✓');
   }catch(e){ console.error('saveVideoSet', e); toast('Fehler: '+(e.message||e)); }
-  finally{ btn.disabled=false; btn.textContent='Set speichern'; }
+  finally{ btn.disabled=false; btn.textContent=label; }
 };
 window.deleteVideoSet=async(id)=>{
   if(!isAdmin())return;
   if(!confirm('Dieses Set wirklich löschen?'))return;
   const { error } = await sb.from('video_sets').delete().eq('id', id);
   if(error){ toast('Fehler: '+error.message); return; }
-  await loadVideoSets(); renderVideos(); toast('Set gelöscht');
+  await loadVideoSets(); S.videoOpen=null; renderVideos(); toast('Set gelöscht');
 };
 
 const ROLES=[
@@ -1403,9 +1431,10 @@ function renderVideos(){
       <div class="vrow" data-v="${v.id}">
         <div class="vthumb">${v.thumb_url?`<img src="${v.thumb_url}" alt="" />`:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>`}</div>
         <div class="vmeta"><div class="vtitle">${v.title}</div><div class="vinfo">${v.qs.length} Fragen${v.tag?' · '+v.tag:''}</div></div>
-        ${isAdmin()?`<button class="vdel" data-del="${v.id}" title="Set löschen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`:`<span class="vchev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>`}
+        ${isAdmin()?`<button class="vedit" data-edit="${v.id}" title="Set bearbeiten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button><button class="vdel" data-del="${v.id}" title="Set löschen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`:`<span class="vchev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>`}
       </div>`).join('')+`</div>`;
   host.querySelectorAll('.vrow').forEach(el=>el.onclick=()=>{S.videoOpen=el.dataset.v;renderVideos();});
+  host.querySelectorAll('.vedit').forEach(b=>b.onclick=e=>{e.stopPropagation();openAdmin(b.dataset.edit);});
   host.querySelectorAll('.vdel').forEach(b=>b.onclick=e=>{e.stopPropagation();deleteVideoSet(b.dataset.del);});
 }
 window.vTab=t=>{S.vTab=t;S.pOpen=null;renderVideos();};
@@ -1775,10 +1804,16 @@ function boot(){
   initAuth();
 }
 function startApp(){ S=fresh(); boot(); }
-// Auf den Supabase-Client warten, der im <head>-Modul verzögert geladen wird
-(function waitForSupabase(){
-  if(window.supabase){ sb = window.supabase; startApp(); }
-  else setTimeout(waitForSupabase, 30);
+// Auf den Supabase-Client warten; nach spätestens ~8s abbrechen und Hinweis zeigen
+(function waitForSupabase(tries){
+  tries=tries||0;
+  if(window.supabase && window.supabase.auth){ sb = window.supabase; startApp(); return; }
+  if(tries>260){ // ~8 Sekunden
+    const l=document.getElementById('loader');
+    if(l) l.innerHTML='<div style="text-align:center;color:#fff;font-family:sans-serif;padding:24px"><div style="font-size:15px;font-weight:600;margin-bottom:8px">Verbindung fehlgeschlagen</div><div style="font-size:13px;opacity:.85;margin-bottom:16px">Bitte prüfe deine Internetverbindung.</div><button onclick="location.reload()" style="background:#fff;color:#f5805c;border:0;border-radius:999px;padding:10px 22px;font-size:14px;font-weight:700">Neu laden</button></div>';
+    return;
+  }
+  setTimeout(()=>waitForSupabase(tries+1), 30);
 })();
 </script>
 <script>

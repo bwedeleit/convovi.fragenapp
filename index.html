@@ -217,6 +217,13 @@ body.work .vrow{background:#3d372f}
 body.work .afi{background:var(--panel)}
 .afi:focus{border-color:var(--terra)}
 .adminform .bigbtn{margin-top:16px}
+.adqrow{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px}
+.adqrow .afi{flex:1}
+.adqdel{flex:none;width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:transparent;color:var(--faint);display:grid;place-items:center;transition:.14s}
+.adqdel:hover{background:var(--nope);color:#fff;border-color:var(--nope)}
+.adqdel svg{width:15px;height:15px}
+.addqbtn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px;border:1.5px dashed var(--terra);border-radius:12px;background:var(--accsoft);color:var(--terra-deep);font-size:12.5px;font-weight:700;cursor:pointer;margin-top:2px}
+.addqbtn svg{width:16px;height:16px}
 .thumbpick{position:relative;height:150px;border:1.5px dashed var(--line);border-radius:14px;display:grid;place-items:center;text-align:center;color:var(--faint);font-size:12px;overflow:hidden;cursor:pointer}
 .thumbpick svg{width:30px;height:30px;margin-bottom:4px}
 .thumbpick img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -315,6 +322,7 @@ input[type=text]:focus,input[type=datetime-local]:focus{border-color:var(--terra
 .bnav .navlab .cnt{min-width:16px;height:16px;border-radius:8px;background:var(--terra);color:#fff;font-size:9.5px;font-weight:700;display:inline-grid;place-items:center;padding:0 4px;font-family:var(--mono)}
 
 .viewbody{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#viewForYou{display:flex;flex-direction:column;justify-content:center;min-height:100%}
 .calibbar{flex:none}
 .note{margin-top:14px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.7);text-align:center;line-height:1.7;flex:none}
 body.work .note{color:var(--faint)}
@@ -623,10 +631,9 @@ html{-webkit-text-size-adjust:100%;touch-action:manipulation}
       <input type="text" id="adTag" class="afi" placeholder="z. B. Ungewöhnlich" />
       <label class="afl">Instagram-Link (optional)</label>
       <input type="url" id="adIg" class="afi" placeholder="https://www.instagram.com/reel/…" />
-      <label class="afl">Fragen (1–3)</label>
-      <textarea id="adQ1" class="afi" rows="2" placeholder="Frage 1"></textarea>
-      <textarea id="adQ2" class="afi" rows="2" placeholder="Frage 2 (optional)"></textarea>
-      <textarea id="adQ3" class="afi" rows="2" placeholder="Frage 3 (optional)"></textarea>
+      <label class="afl">Fragen (1–10)</label>
+      <div id="adQuestions"></div>
+      <button class="addqbtn" id="adAddQ" onclick="adminAddQuestion()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Frage hinzufügen</button>
       <button class="bigbtn" id="adSave" onclick="saveVideoSet()">Set speichern</button>
     </div>
   </div></div></div>
@@ -657,10 +664,39 @@ const isAdmin = ()=> currentUser && currentUser.email === ADMIN_EMAIL;
 
 // ═══════════ ADMIN: neue Fragen-Sets ═══════════
 let adminThumbFile=null;
+const MAX_Q=10;
+function adminRenderQuestions(count){
+  const host=document.getElementById('adQuestions'); if(!host)return;
+  host.innerHTML='';
+  for(let i=0;i<count;i++){
+    const row=document.createElement('div'); row.className='adqrow';
+    row.innerHTML=`<textarea class="afi adq" rows="2" placeholder="Frage ${i+1}${i===0?'':' (optional)'}"></textarea>`+
+      (i>0?`<button class="adqdel" title="Frage entfernen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`:'');
+    host.appendChild(row);
+    const del=row.querySelector('.adqdel');
+    if(del) del.onclick=()=>{ row.remove(); adminSyncAddBtn(); };
+  }
+  adminSyncAddBtn();
+}
+function adminSyncAddBtn(){
+  const host=document.getElementById('adQuestions'); const btn=document.getElementById('adAddQ');
+  if(host&&btn) btn.style.display = host.querySelectorAll('.adq').length>=MAX_Q ? 'none' : '';
+}
+window.adminAddQuestion=()=>{
+  const host=document.getElementById('adQuestions'); if(!host)return;
+  if(host.querySelectorAll('.adq').length>=MAX_Q)return;
+  const i=host.querySelectorAll('.adq').length;
+  const row=document.createElement('div'); row.className='adqrow';
+  row.innerHTML=`<textarea class="afi adq" rows="2" placeholder="Frage ${i+1} (optional)"></textarea><button class="adqdel" title="Frage entfernen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`;
+  host.appendChild(row);
+  row.querySelector('.adqdel').onclick=()=>{ row.remove(); adminSyncAddBtn(); };
+  adminSyncAddBtn();
+};
 window.openAdmin=()=>{
   if(!isAdmin()){ toast('Nur für Admin'); return; }
   adminThumbFile=null;
-  ['adTitle','adTag','adIg','adQ1','adQ2','adQ3'].forEach(id=>{const el=document.getElementById(id); if(el)el.value='';});
+  ['adTitle','adTag','adIg'].forEach(id=>{const el=document.getElementById(id); if(el)el.value='';});
+  adminRenderQuestions(1);
   const prev=document.getElementById('thumbPrev'), ph=document.getElementById('thumbPlaceholder');
   if(prev){prev.classList.add('hidden');prev.src='';} if(ph)ph.classList.remove('hidden');
   openModal('mdAdmin');
@@ -674,7 +710,7 @@ window.openAdmin=()=>{
 window.saveVideoSet=async()=>{
   if(!isAdmin()){ toast('Nur für Admin'); return; }
   const title=(document.getElementById('adTitle').value||'').trim();
-  const qs=['adQ1','adQ2','adQ3'].map(id=>(document.getElementById(id).value||'').trim()).filter(Boolean);
+  const qs=[...document.querySelectorAll('#adQuestions .adq')].map(t=>(t.value||'').trim()).filter(Boolean);
   if(!title){ toast('Bitte einen Titel eingeben'); return; }
   if(!qs.length){ toast('Mindestens eine Frage eingeben'); return; }
   const btn=document.getElementById('adSave'); btn.disabled=true; btn.textContent='Speichere…';

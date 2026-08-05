@@ -12,7 +12,7 @@
     );
   </script>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Convovi · fragen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -88,8 +88,9 @@ body.work .donerow .ins{background:#3d372f}
 
 /* ============ PHONE ============ */
 
-.phone{background:var(--surface);border-radius:28px;padding:14px 14px 12px;box-shadow:0 24px 50px -28px rgba(43,38,34,.55)}
-.pbar{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 10px;min-height:30px}
+#main{position:fixed;inset:0;max-width:480px;margin:0 auto;display:flex;flex-direction:column;padding:12px 12px max(12px,env(safe-area-inset-bottom));box-sizing:border-box}
+.phone{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--surface);border-radius:28px;padding:14px 14px 12px;box-shadow:0 24px 50px -28px rgba(43,38,34,.55)}
+.pbar{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 10px;min-height:30px;flex:none}
 .pbar .who{font-family:var(--mono);font-size:11.5px;color:var(--faint)}
 .picons{display:flex;gap:8px}
 .iconbtn{position:relative;width:38px;height:38px;border-radius:12px;background:#fff;border:1px solid var(--line);color:var(--dim);display:grid;place-items:center;transition:.15s}
@@ -252,6 +253,21 @@ body.work .qrow{background:#3d372f}
 .qrow .qperson{flex:none;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--terra);display:grid;place-items:center;transition:.14s}
 .qrow .qperson:hover{background:var(--terra);color:#fff;border-color:var(--terra)}
 .qrow .qperson svg{width:17px;height:17px}
+.qrow .qremove{flex:none;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--faint);display:grid;place-items:center;transition:.14s;margin-left:6px}
+.qrow .qremove:hover{background:var(--nope);color:#fff;border-color:var(--nope)}
+.qrow .qremove svg{width:15px;height:15px}
+/* Deck/Liste-Umschalter */
+.libmode{display:inline-flex;gap:4px;background:var(--line);border-radius:999px;padding:3px;margin-bottom:14px}
+.libmode button{border:0;background:none;font-size:12.5px;font-weight:600;color:var(--dim);padding:6px 16px;border-radius:999px;cursor:pointer;transition:.14s}
+.libmode button.on{background:#fff;color:var(--terra-deep);box-shadow:0 2px 6px -2px rgba(43,38,34,.25)}
+body.work .libmode button.on{background:var(--panel)}
+/* Bibliotheks-Kartendeck */
+.libdeck{height:300px;margin:2px 4px 14px}
+.libshell{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:0 10px 24px -18px rgba(43,38,34,.4)}
+.libdeckbar{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--faint);padding:0 4px}
+.libdeckdone{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--disp);font-size:18px;color:var(--dim);background:var(--card);border:1px solid var(--line);border-radius:22px}
+.cardbtn.remove{color:var(--faint)}
+.cardbtn.remove:hover{background:var(--nope);color:#fff;border-color:var(--nope)}
 .libempty{text-align:center;color:var(--faint);font-size:13px;line-height:1.6;padding:26px 10px}
 .namebox{display:flex;flex-direction:column;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
 body.work .namebox{background:#3d372f}
@@ -271,15 +287,16 @@ body.work input[type=text],body.work input[type=datetime-local]{background:#3d37
 input[type=text]:focus,input[type=datetime-local]:focus{border-color:var(--terra)} input::placeholder{color:var(--faint)}
 
 /* ============ BOTTOM NAV ============ */
-.bnav{display:flex;border-top:1px solid var(--line);margin:8px -14px -12px;padding:6px 6px 4px}
+.bnav{display:flex;border-top:1px solid var(--line);margin:8px -14px -12px;padding:6px 6px 4px;flex:none}
 .bnav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;color:var(--faint);padding:8px 4px 6px;font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.02em;transition:.15s}
 .bnav button svg{width:21px;height:21px}
 .bnav button.on{color:var(--terra)}
 .bnav .navlab{display:inline-flex;align-items:center;gap:5px}
 .bnav .navlab .cnt{min-width:16px;height:16px;border-radius:8px;background:var(--terra);color:#fff;font-size:9.5px;font-weight:700;display:inline-grid;place-items:center;padding:0 4px;font-family:var(--mono)}
 
-.viewbody{min-height:398px}
-.note{margin-top:14px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.7);text-align:center;line-height:1.7}
+.viewbody{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.calibbar{flex:none}
+.note{margin-top:14px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.7);text-align:center;line-height:1.7;flex:none}
 body.work .note{color:var(--faint)}
 .note kbd{background:rgba(255,255,255,.16);border-radius:5px;padding:2px 6px;color:#fff}
 body.work .note kbd{background:rgba(245,128,92,.16);color:var(--terra)}
@@ -371,6 +388,12 @@ body.work .pfedit{background:var(--panel);color:var(--ink)}
 .wchip b{cursor:pointer;opacity:.7;font-weight:700}.wchip b:hover{opacity:1}
 #pfAdd{width:90px;background:transparent;border:1px dashed var(--line);border-radius:999px;padding:4px 10px;font-size:11px;color:var(--dim);outline:none;font-family:var(--mono)}
 .privrow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.legalrow{display:flex;justify-content:center;flex-wrap:wrap;gap:14px;margin-top:20px}
+.legalrow .linkbtn{padding:0}
+.legalfoot{display:flex;justify-content:center;flex-wrap:wrap;gap:14px;margin-top:18px}
+.legalfoot button{background:none;border:0;color:rgba(255,255,255,.75);font-size:11.5px;text-decoration:underline;cursor:pointer}
+body.work .legalfoot button{color:var(--faint)}
+.screen .legalfoot button{color:var(--faint)}
 .linkbtn{background:none;border:0;color:var(--faint);font-size:12.5px;font-weight:600;text-decoration:underline;cursor:pointer}
 .linkbtn:hover{color:var(--dim)}
 .dangerbtn{background:none;border:1px solid rgba(198,80,56,.4);color:var(--nope);font-size:12.5px;font-weight:600;border-radius:999px;padding:8px 15px;cursor:pointer;transition:.14s}
@@ -389,6 +412,10 @@ body.work .pfedit{background:var(--panel);color:var(--ink)}
 .spinner{width:38px;height:38px;border-radius:50%;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;animation:spin .8s linear infinite}
 body.work .spinner{border-color:rgba(43,38,34,.2);border-top-color:var(--terra)}
 @keyframes spin{to{transform:rotate(360deg)}}
+/* Kein Auto-Zoom auf iOS: Eingaben >=16px, kein Doppeltipp-Zoom */
+input,textarea,select{font-size:16px!important}
+*{-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
 </style>
 </head>
 <body>
@@ -411,6 +438,11 @@ body.work .spinner{border-color:rgba(43,38,34,.2);border-top-color:var(--terra)}
       <h1>Check deine<br>E-Mails</h1>
       <p>Wir haben dir einen Login-Link geschickt. Öffne ihn auf diesem Gerät, dann geht's los.</p>
     </div>
+    <div class="legalfoot">
+      <button onclick="openModal('mdImpressum')">Impressum</button>
+      <button onclick="openModal('mdPriv')">Datenschutz</button>
+      <button onclick="openModal('mdAGB')">Nutzungsbedingungen</button>
+    </div>
   </section>
   <div class="wrap" id="wrap">
   <header class="top topspacer"></header>
@@ -430,6 +462,12 @@ body.work .spinner{border-color:rgba(43,38,34,.2);border-top-color:var(--terra)}
     <button class="bigbtn" id="calibStart">Los geht's</button>
     <div class="mini">Kein Anmelden, keine Formulare. Nur Fragen.</div>
     <button class="linkbtn" onclick="showLogin()" style="margin-top:12px">Schon dabei gewesen? Einloggen</button>
+    <div class="mini" style="margin-top:14px">Mit „Los geht's" akzeptierst du die Nutzungsbedingungen.</div>
+    <div class="legalfoot">
+      <button onclick="openModal('mdImpressum')">Impressum</button>
+      <button onclick="openModal('mdPriv')">Datenschutz</button>
+      <button onclick="openModal('mdAGB')">Nutzungsbedingungen</button>
+    </div>
   </section>
 
   <!-- ═══ KALIBRIERUNG: ABSCHLUSS ═══ -->
@@ -516,16 +554,37 @@ body.work .spinner{border-color:rgba(43,38,34,.2);border-top-color:var(--terra)}
   <div class="sbody" id="shareBody"></div></div></div>
 
 <div class="backdrop" id="mdPriv"><div class="sheet">
-  <div class="shead"><div><h2>Datenschutz</h2><p>Kurz &amp; ehrlich — Stand MVP.</p></div><button class="xbtn" data-close="mdPriv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="shead"><div><h2>Datenschutzerklärung</h2><p>Stand August 2026</p></div><button class="xbtn" data-close="mdPriv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <div class="sbody"><div class="privtext">
-    <h3>Wer verantwortlich ist</h3>[Björn / Convovi · vollständige Adresse + Kontakt eintragen]. Fragen zum Datenschutz: [E-Mail].
-    <h3>Welche Daten wir verarbeiten</h3>Deine Antworten aus dem Kennenlernen (10 Fragen), deine Swipes (mag ich / nö / merken), von dir gespeicherte Fragen, angelegte Personen und Erinnerungen. Wenn du dich anmeldest: E-Mail-Adresse.
-    <h3>Wozu</h3>Um dir passende Gesprächsfragen zu zeigen und dein Erlebnis zu personalisieren. Rechtsgrundlage ist die Erfüllung unseres Nutzungsvertrags (Art. 6 Abs. 1 b DSGVO) und deine Einwilligung für die Personalisierung, die du jederzeit widerrufen kannst.
-    <h3>KI-Verarbeitung</h3>Für generierte Fragen senden wir deine Vorlieben (nicht deinen Namen) an unseren KI-Dienstleister Anthropic. Du kannst die KI-Generierung in deinem Profil ausschalten.
-    <h3>Dienstleister</h3>Supabase (Datenbank, EU-Region), Vercel (Hosting), Anthropic (KI). Mit allen bestehen Auftragsverarbeitungsverträge.
-    <h3>Speicherdauer</h3>Solange dein Profil besteht. Du kannst es jederzeit in „So tickst du" → „Profil löschen" vollständig entfernen.
-    <h3>Deine Rechte</h3>Auskunft, Berichtigung, Löschung, Datenübertragbarkeit, Widerspruch und Beschwerde bei einer Aufsichtsbehörde. Melde dich dafür bei [E-Mail].
-    <p style="margin-top:16px;font-size:11px;color:var(--faint)">Dies ist eine MVP-Kurzfassung und ersetzt keine anwaltlich geprüfte Datenschutzerklärung.</p>
+    <h3>1. Verantwortlicher</h3>Björn Wedeleit, Im Holderstrauch 26, 22457 Hamburg. Kontakt: hello@convovi.app.
+    <h3>2. Welche Daten wir verarbeiten</h3>Deine Antworten aus dem Kennenlernen (10 Aussagen), deine Swipes (mag ich / nö / merken), von dir gespeicherte Fragen, von dir angelegte Personen und Erinnerungen sowie – falls du dein Konto sicherst – deine E-Mail-Adresse. Technisch bedingt verarbeiten unsere Dienstleister außerdem <b>IP-Adressen und Server-Logfiles</b> (Zugriffszeit, abgerufene Ressource, Browsertyp) zur Auslieferung und Absicherung der App.
+    <h3>3. Speicherung auf dem Gerät</h3>Zur Ausführung der Kernfunktionen (Login-Sitzung, Zwischenspeichern) nutzen wir <b>Local Storage</b> deines Browsers. Es werden keine Tracking- oder Marketing-Cookies gesetzt.
+    <h3>4. Zwecke &amp; Rechtsgrundlagen</h3>Wir verarbeiten deine Daten, um dir passende Gesprächsfragen zu zeigen und dein Erlebnis zu personalisieren. Rechtsgrundlagen sind die Erfüllung des Nutzungsvertrags (Art. 6 Abs. 1 lit. b DSGVO), dein berechtigtes Interesse an einem stabilen Betrieb (lit. f) sowie deine Einwilligung für die Personalisierung (lit. a), die du jederzeit über die Schalter in „So tickst du" widerrufen kannst.
+    <h3>5. KI-Verarbeitung</h3>Für generierte Fragen übermitteln wir deine abgeleiteten Vorlieben (nicht deinen Namen) an Anthropic. Du kannst die KI-Generierung in deinem Profil ausschalten.
+    <h3>6. Dienstleister &amp; USA-Übermittlung</h3>Supabase (Datenbank, EU-Region Frankfurt), Vercel (Hosting) und Anthropic (KI). Mit allen bestehen Auftragsverarbeitungsverträge. Soweit dabei Daten in die USA übermittelt werden (Vercel, Anthropic), stützt sich die Übermittlung auf das <b>EU-US Data Privacy Framework</b> bzw. die Standardvertragsklauseln der EU-Kommission.
+    <h3>7. Schriftarten</h3>Verwendete Schriftarten werden lokal auf unserem Server ausgeliefert; es findet keine Verbindung zu Google-Servern statt.
+    <h3>8. Speicherdauer</h3>Solange dein Profil besteht. Du kannst es jederzeit in „So tickst du" → „Profil löschen" vollständig und endgültig (Hard Delete) aus der Datenbank entfernen.
+    <h3>9. Deine Rechte</h3>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch sowie auf Beschwerde bei einer Aufsichtsbehörde. Für Auskunft oder Export deiner Daten wende dich an hello@convovi.app – wir antworten innerhalb eines Monats.
+  </div></div></div></div>
+
+<div class="backdrop" id="mdImpressum"><div class="sheet">
+  <div class="shead"><div><h2>Impressum</h2><p>Angaben gemäß § 5 DDG</p></div><button class="xbtn" data-close="mdImpressum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="sbody"><div class="privtext">
+    <h3>Diensteanbieter</h3>Björn Wedeleit<br>Im Holderstrauch 26<br>22457 Hamburg<br>Deutschland
+    <h3>Kontakt</h3>E-Mail: hello@convovi.app
+    <h3>Verantwortlich für den Inhalt</h3>Björn Wedeleit, Anschrift wie oben.
+    <p style="margin-top:16px;font-size:11px;color:var(--faint)">Plattform der EU-Kommission zur Online-Streitbeilegung: ec.europa.eu/consumers/odr. Wir sind nicht verpflichtet und nicht bereit, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+  </div></div></div></div>
+
+<div class="backdrop" id="mdAGB"><div class="sheet">
+  <div class="shead"><div><h2>Nutzungsbedingungen</h2><p>Stand August 2026</p></div><button class="xbtn" data-close="mdAGB"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="sbody"><div class="privtext">
+    <h3>1. Leistung</h3>Convovi Fragen ist eine App, die Impulse für Gespräche bereitstellt. Die App wird im Rahmen eines frühen Tests ohne Verfügbarkeitszusage bereitgestellt.
+    <h3>2. Von dir eingegebene Daten Dritter</h3>Wenn du Personen anlegst und diesen Fragen oder Erinnerungen zuordnest, verarbeitest du Angaben über Dritte. Du sicherst zu, dazu berechtigt zu sein, und stellst den Betreiber von Ansprüchen Dritter frei, die aus einer unberechtigten Eingabe solcher Daten entstehen. Es werden nur die von dir vergebenen Namen gespeichert, keine Kontaktdaten Dritter.
+    <h3>3. KI-generierte Inhalte</h3>Ein Teil der Fragen wird automatisiert durch KI erzeugt. Diese Inhalte können unpassend, fehlerhaft oder missverständlich sein. Eine Haftung für die inhaltliche Richtigkeit oder Angemessenheit KI-generierter Fragen ist – außer bei Vorsatz oder grober Fahrlässigkeit – ausgeschlossen. Nutze dein eigenes Urteil, welche Frage du wem stellst.
+    <h3>4. Faire Nutzung</h3>Automatisierte oder missbräuchliche Nutzung (z. B. Skripte, die massenhaft Fragen erzeugen) ist untersagt. Bei Verstoß dürfen wir den Zugang sperren, um Missbrauch und übermäßige Kosten zu verhindern.
+    <h3>5. Haftung</h3>Wir haften unbeschränkt bei Vorsatz und grober Fahrlässigkeit sowie nach dem Produkthaftungsgesetz. Bei einfacher Fahrlässigkeit haften wir nur bei Verletzung wesentlicher Vertragspflichten und begrenzt auf den vorhersehbaren, typischen Schaden.
+    <h3>6. Änderungen</h3>Wir können diese Bedingungen anpassen; die jeweils aktuelle Fassung ist in der App abrufbar.
   </div></div></div></div>
 
 <div class="toast" id="toast"></div>
@@ -667,7 +726,7 @@ const fresh=()=>({
   saved:[],liked:[],collections:[],persons:[],
   mode:'calib', view:'foryou', calibQueue:[], calibDone:0, calibAnswers:[], profile:null,
   personalize:true, allowGen:true,
-  lib:{tab:'liked',sel:false,picked:new Set(),naming:false,openColl:null},
+  lib:{tab:'liked',sel:false,picked:new Set(),naming:false,openColl:null,viewMode:'deck',deckIdx:0},
   videoOpen:null, saveTarget:null, vTab:'videos', pOpen:null,
   personQ:null, personPick:null, personStage:'pick', personNewOpen:false, personRel:'friend',
   swipes:0,likes:0,swipesTotal:0,cost:0,calls:0,generating:false,lastPrompt:null,
@@ -1282,22 +1341,18 @@ function renderPersonModal(){
   if(S.personStage==='pick'){
     $('#personTitle').textContent='Für wen ist diese Frage?';
     let html='<div class="savelist">';
-    S.persons.forEach(p=>{html+=`<div class="savet" data-p="${p.id}"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.3"/><path d="M5.5 20c0-3.4 2.9-5.6 6.5-5.6s6.5 2.2 6.5 5.6"/></svg></span><span class="st">${p.name}<div style="font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:2px">${relLabel(p.relation)}</div></span><span class="sc">${p.questions.length}</span></div>`;});
+    S.persons.forEach(p=>{html+=`<div class="savet" data-p="${p.id}"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.3"/><path d="M5.5 20c0-3.4 2.9-5.6 6.5-5.6s6.5 2.2 6.5 5.6"/></svg></span><span class="st">${p.name}</span><span class="sc">${p.questions.length}</span></div>`;});
     html+=`<div class="savet" data-p="__new"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="st">Neue Person …</span></div></div>`;
     if(S.personNewOpen){
       html+=`<div class="namebox" style="margin-top:12px"><span class="nl">Wer ist es?</span>
         <input type="text" id="personName" placeholder="Name, z. B. Lena" />
-        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:2px" id="relChips"></div>
-        <button class="minibtn prim" id="personCreate" style="margin-top:4px">Person anlegen</button></div>`;
+        <button class="minibtn prim" id="personCreate" style="margin-top:8px">Person anlegen</button></div>`;
     }
     body.innerHTML=html;
     body.querySelectorAll('.savet').forEach(el=>el.onclick=()=>{const id=el.dataset.p;if(id==='__new'){S.personNewOpen=true;renderPersonModal();setTimeout(()=>$('#personName')?.focus(),40);}else choosePerson(id);});
     if(S.personNewOpen){
-      const rc=$('#relChips');
-      RELS.forEach(r=>{const b=document.createElement('div');b.className='chip';b.style.cssText='font-size:12.5px;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--dim);cursor:pointer';
-        if(S.personRel===r.k){b.style.background='var(--terra)';b.style.color='#fff';b.style.borderColor='var(--terra)';}
-        b.textContent=r.l;b.onclick=()=>{S.personRel=r.k;renderPersonModal();setTimeout(()=>$('#personName')?.focus(),10);};rc.appendChild(b);});
       $('#personCreate').onclick=createPerson;
+      const inp=$('#personName'); if(inp){ inp.onkeydown=e=>{ if(e.key==='Enter')createPerson(); }; }
     }
   }else{ // reminder-stage
     const p=S.persons.find(x=>x.id===S.personPick);
@@ -1334,7 +1389,7 @@ function renderPersonModal(){
 function choosePerson(id){const p=S.persons.find(x=>x.id===id);if(!p.questions.includes(S.personQ))p.questions.push(S.personQ);S.personPick=id;S.personStage='reminder';renderPersonModal();updateLibBadge();savePersons();toast(`Frage für ${p.name} gespeichert`);}
 function createPerson(){
   const nm=($('#personName')?.value||'').trim(); if(!nm){$('#personName').focus();return;}
-  const p={id:'p'+Date.now(),name:nm,relation:S.personRel,questions:[],reminders:[]};
+  const p={id:'p'+Date.now(),name:nm,questions:[],reminders:[]};
   S.persons.unshift(p); S.personNewOpen=false; choosePerson(p.id);
 }
 
@@ -1427,8 +1482,13 @@ function renderSelf(){
     <div class="tsec"><h4>Verlauf</h4><div class="log">${logHtml}</div></div>
   </div></details>
 
-  <div class="privrow">
+  <div class="legalrow">
+    <button class="linkbtn" onclick="openModal('mdImpressum')">Impressum</button>
     <button class="linkbtn" onclick="openModal('mdPriv')">Datenschutz</button>
+    <button class="linkbtn" onclick="openModal('mdAGB')">Nutzungsbedingungen</button>
+  </div>
+  <div class="privrow">
+    <span class="linkbtn" style="cursor:default">Rechtliches</span>
     <button class="dangerbtn" onclick="deleteProfile()">Profil löschen</button>
   </div>`;
   $('#selfBody').innerHTML=html;
@@ -1463,7 +1523,7 @@ function renderLibrary(){
     <button class="${L.tab==='persons'?'on':''}" onclick="libTab('persons')"><span class="lt">Personen</span><span class="ln">${S.persons.length}</span></button></div>`;
   if(L.tab==='persons'){
     if(!S.persons.length)html+=`<div class="libempty">Noch keine Personen.<br>Tippe auf einer Frage unten rechts das <b>Personen-Symbol</b>, um eine Frage für jemanden zu merken.</div>`;
-    else html+=S.persons.map(p=>{const open=L.openColl===p.id;return `<div class="coll"><div class="ch" onclick="libToggleColl('${p.id}')"><span class="cn">${p.name}</span><span class="cc">${relLabel(p.relation)} · ${p.questions.length} Fragen ${open?'▾':'▸'}</span></div>${open?`<div class="cq">${p.questions.map(t=>`<div class="cqi">${t}</div>`).join('')}${p.reminders.length?`<div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)">${p.reminders.map(r=>`<div class="cqi" style="color:var(--terra-deep)">🔔 Push · ${r.when}</div>`).join('')}</div>`:''}</div>`:''}</div>`;}).join('');
+    else html+=S.persons.map(p=>{const open=L.openColl===p.id;return `<div class="coll"><div class="ch" onclick="libToggleColl('${p.id}')"><span class="cn">${p.name}</span><span class="cc">${p.questions.length} Fragen ${open?'▾':'▸'}</span></div>${open?`<div class="cq">${p.questions.map(t=>`<div class="cqi">${t}</div>`).join('')}${p.reminders.length?`<div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)">${p.reminders.map(r=>`<div class="cqi" style="color:var(--terra-deep)">🔔 Push · ${r.when}</div>`).join('')}</div>`:''}</div>`:''}</div>`;}).join('');
     host.innerHTML=html;return;
   }
   if(L.tab==='collections'){
@@ -1472,13 +1532,78 @@ function renderLibrary(){
     host.innerHTML=html;return;
   }
   const list=curList();
-  html+=`<div class="libhint">${L.tab==='liked'?'Alle Fragen, die du nach rechts geswipt hast.':'Fragen, die du dir gemerkt oder aus Videos gespeichert hast.'}</div>`;
+  html+=`<div class="libmode">
+    <button class="${L.viewMode!=='list'?'on':''}" onclick="libViewMode('deck')">Deck</button>
+    <button class="${L.viewMode==='list'?'on':''}" onclick="libViewMode('list')">Liste</button></div>`;
   if(!list.length){html+=L.tab==='liked'?`<div class="libempty">Noch nichts gemocht.<br>Swipe eine Frage nach rechts.</div>`:`<div class="libempty">Noch nichts gemerkt.<br>Swipe nach oben oder speichere aus einem Video.</div>`;host.innerHTML=html;return;}
+
+  if(L.viewMode!=='list'){
+    const idx=Math.max(0,Math.min(L.deckIdx,list.length));
+    html+=`<div class="deck libdeck" id="libDeck"></div>
+      <div class="libdeckbar"><span>${Math.min(idx+1,list.length)} / ${list.length} · wische durch</span>
+      <button class="minibtn" onclick="libDeckReset()">Von vorn</button></div>`;
+    host.innerHTML=html;
+    buildLibDeck(list, idx);
+    return;
+  }
+
   if(!L.sel)html+=`<div class="libactions"><span class="grow">${list.length} Fragen</span><button class="minibtn" onclick="libSelMode(true)">Auswählen</button></div>`;
   else html+=`<div class="libactions"><button class="minibtn" onclick="libSelMode(false)">Abbrechen</button><span class="grow" style="text-align:center">${L.picked.size} gewählt</span><button class="minibtn prim" ${L.picked.size?'':'disabled'} onclick="libStartName()">Liste anlegen</button></div>`;
   if(L.naming)html+=`<div class="namebox"><span class="nl">Wie soll die Liste heißen?</span><div class="namerow"><input type="text" id="collName" placeholder="z. B. Erstes Date · Roadtrip · Team-Retro" /><button class="minibtn prim" onclick="libCreate()">Speichern</button></div><span class="hint">Die Fragen bleiben in „${L.tab==='liked'?'Mag ich':'Gemerkt'}".</span></div>`;
-  html+='<div class="qlist">'+list.map((q,i)=>{const on=L.picked.has(q.text);return `<div class="qrow ${L.sel?'sel':''} ${on?'on':''}" ${L.sel?`onclick="libPick(${i})"`:''}>${L.sel?`<span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span>`:''}<div class="qrowmain"><div class="qt">${q.text}</div><div class="qmini">${TONE_L[q.tone]||q.tone}</div></div>${L.sel?'':`<button class="qperson" onclick="libAssignPerson(${i})" title="Einer Person zuordnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.2"/><path d="M4 19c0-3.3 2.7-5.5 6-5.5 1 0 1.9.2 2.7.5"/><path d="M18 15v6M15 18h6"/></svg></button>`}</div>`;}).join('')+'</div>';
+  html+='<div class="qlist">'+list.map((q,i)=>{const on=L.picked.has(q.text);return `<div class="qrow ${L.sel?'sel':''} ${on?'on':''}" ${L.sel?`onclick="libPick(${i})"`:''}>${L.sel?`<span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span>`:''}<div class="qrowmain"><div class="qt">${q.text}</div><div class="qmini">${TONE_L[q.tone]||q.tone||''}</div></div>${L.sel?'':`<button class="qperson" onclick="libAssignPerson(${i})" title="Einer Person zuordnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.2"/><path d="M4 19c0-3.3 2.7-5.5 6-5.5 1 0 1.9.2 2.7.5"/><path d="M18 15v6M15 18h6"/></svg></button><button class="qremove" onclick="libRemoveAt(${i})" title="Aus der Liste entfernen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`}</div>`;}).join('')+'</div>';
   host.innerHTML=html;
+}
+
+/* Bibliotheks-Deck: durch Mag-ich / Gemerkt wischen */
+function buildLibDeck(list, idx){
+  const d=$('#libDeck'); if(!d) return; d.innerHTML='';
+  if(idx>=list.length){ d.innerHTML='<div class="libdeckdone"><div>Alle durchgeschaut ✓</div></div>'; return; }
+  for(let k=Math.min(idx+2,list.length-1);k>idx;k--){
+    const sh=document.createElement('div'); sh.className='qcard libshell';
+    sh.style.zIndex=String(3-(k-idx));
+    sh.style.transform=`scale(${1-(k-idx)*0.04}) translateY(${(k-idx)*10}px)`;
+    d.appendChild(sh);
+  }
+  const q=list[idx];
+  const el=document.createElement('div'); el.className='qcard top'; el.style.zIndex='10';
+  el.innerHTML=`<div class="qtext">${q.text}</div>
+    <div class="cardacts">
+      <button class="cardbtn share" title="Frage teilen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 15V4M8 7l4-3 4 3"/></svg></button>
+      <button class="cardbtn person" title="Für eine Person merken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.2"/><path d="M4 19c0-3.3 2.7-5.5 6-5.5 1 0 1.9.2 2.7.5"/><path d="M18 15v6M15 18h6"/></svg></button>
+      <button class="cardbtn remove" title="Aus der Liste entfernen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>`;
+  d.appendChild(el);
+  const stop=b=>b&&b.addEventListener('pointerdown',e=>e.stopPropagation());
+  const sb2=el.querySelector('.share'), pb=el.querySelector('.person'), rb=el.querySelector('.remove');
+  [sb2,pb,rb].forEach(stop);
+  if(sb2)sb2.onclick=e=>{e.stopPropagation();shareQuestion(q.text);};
+  if(pb)pb.onclick=e=>{e.stopPropagation();openPersonModal(q.text);};
+  if(rb)rb.onclick=e=>{e.stopPropagation();removeSaved(q.text);};
+  libDeckDrag(el);
+}
+function libDeckDrag(el){
+  let sx=0,sy=0,dragging=false;
+  el.addEventListener('pointerdown',e=>{ if(e.target.closest('.cardbtn'))return; dragging=true; sx=e.clientX; sy=e.clientY; try{el.setPointerCapture(e.pointerId);}catch(_){}; el.style.transition='none'; });
+  el.addEventListener('pointermove',e=>{ if(!dragging)return; const dx=e.clientX-sx, dy=e.clientY-sy; el.style.transform=`translate(${dx}px,${dy*0.2}px) rotate(${dx*0.04}deg)`; });
+  const end=e=>{ if(!dragging)return; dragging=false; const dx=(e.clientX||sx)-sx;
+    if(Math.abs(dx)>90){ el.style.transition='.25s ease'; el.style.transform=`translate(${dx>0?600:-600}px,0) rotate(${dx>0?18:-18}deg)`; el.style.opacity='0'; S.lib.deckIdx++; setTimeout(renderLibrary,190); }
+    else { el.style.transition='.2s'; el.style.transform='none'; } };
+  el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end);
+}
+window.libViewMode=v=>{S.lib.viewMode=v; S.lib.deckIdx=0; renderLibrary();};
+window.libDeckReset=()=>{S.lib.deckIdx=0; renderLibrary();};
+window.libRemoveAt=i=>{const q=curList()[i]; if(q)removeSaved(q.text);};
+async function removeSaved(text){
+  const tab=S.lib.tab;
+  if(tab==='liked') S.liked=S.liked.filter(q=>q.text!==text);
+  else S.saved=S.saved.filter(q=>q.text!==text);
+  updateLibBadge(); renderLibrary(); toast('Entfernt');
+  if(currentUser){
+    const { error } = await sb.from('saved_questions').delete()
+      .eq('user_id',currentUser.id).eq('question_text',text)
+      .eq('list_type', tab==='liked'?'liked':'saved');
+    if(error) console.error('removeSaved', error);
+  }
 }
 window.libTab=t=>{S.lib.tab=t;S.lib.sel=false;S.lib.naming=false;S.lib.picked.clear();renderLibrary();};
 window.libSelMode=v=>{S.lib.sel=v;S.lib.naming=false;S.lib.picked.clear();renderLibrary();};

@@ -47,6 +47,13 @@ svg{display:block}
 
 header.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .topspacer{min-height:42px}
+.securebox{background:var(--accsoft);border:1px solid var(--line);border-radius:16px;padding:16px;margin:16px 0}
+.securebox.done{background:rgba(46,168,140,.1);border-color:rgba(46,168,140,.3)}
+.securebox .lab{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--terra-deep);margin-bottom:8px}
+.securep{font-size:13px;line-height:1.5;color:var(--dim);margin-bottom:12px}
+.secinput{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-size:14px;margin-bottom:10px;outline:none;background:#fff}
+.secinput:focus{border-color:var(--terra)}
+.securebox .bigbtn{margin-top:0}
 .logo{font-family:var(--grotesk);font-weight:800;font-size:22px;letter-spacing:.02em;color:var(--onTerra);text-transform:uppercase}
 .logo small{display:block;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.7);letter-spacing:.05em;font-weight:400;margin-top:2px;text-transform:none}
 body.work .logo{color:var(--terra)} body.work .logo small{color:rgba(245,128,92,.7)}
@@ -415,6 +422,7 @@ body.work .pfedit{background:var(--panel);color:var(--ink)}
     <div class="steps" id="introSteps"></div>
     <button class="bigbtn" id="calibStart">Los geht's</button>
     <div class="mini">Kein Anmelden, keine Formulare. Nur Fragen.</div>
+    <button class="linkbtn" onclick="showLogin()" style="margin-top:12px">Schon dabei gewesen? Einloggen</button>
   </section>
 
   <!-- ═══ KALIBRIERUNG: ABSCHLUSS ═══ -->
@@ -545,35 +553,54 @@ function hideAllScreens(){
   });
 }
 
-let routedIn=false, loginShown=false;
+let routedIn=false, introShown=false;
 async function initAuth(){
   // Auf den Auth-Zustand reagieren. INITIAL_SESSION feuert einmal,
-  // SOBALD Supabase die Session aus dem Speicher wiederhergestellt hat.
+  // sobald Supabase die (evtl. anonyme) Session wiederhergestellt hat.
   sb.auth.onAuthStateChange((event, session)=>{
     if(session){ routeIn(session); }
-    else if(event==='INITIAL_SESSION' || event==='SIGNED_OUT'){ showLogin(); }
+    else if(event==='INITIAL_SESSION' || event==='SIGNED_OUT'){ showCalibIntro(); }
   });
-  // Schnellstart, falls die Session schon bereit ist — zeigt NIE den Login.
   try{ const { data:{ session } } = await sb.auth.getSession(); if(session) routeIn(session); }
   catch(e){ console.error('getSession', e); }
 }
 
 function routeIn(session){
-  if(routedIn) return;               // nur einmal einloggen-routen
+  if(routedIn) return;
   routedIn=true; currentUser=session.user;
   onLoggedIn().catch(e=>{
     console.error('Login-Routing fehlgeschlagen', e);
-    // Trotzdem in die App lassen, statt hängen zu bleiben:
     hideAllScreens();
     document.getElementById('calibIntro').classList.remove('hidden');
   });
 }
 
+// Neuer Nutzer ohne Konto: direkt Modus 1 zeigen — kein Login-Zwang
+function showCalibIntro(){
+  if(routedIn || introShown) return;
+  introShown=true;
+  hideAllScreens();
+  document.getElementById('calibIntro').classList.remove('hidden');
+}
+
+// Optionaler Login (für Rückkehrer, die schon eine E-Mail hinterlegt haben)
 function showLogin(){
-  if(routedIn || loginShown) return; // nicht zeigen, wenn schon eingeloggt-geroutet
-  loginShown=true;
   hideAllScreens();
   document.getElementById('login').classList.remove('hidden');
+}
+
+// Legt bei Bedarf ein anonymes Schattenkonto an (ohne E-Mail)
+async function ensureAccount(){
+  if(currentUser) return true;
+  routedIn=true;   // verhindert, dass das ausgelöste SIGNED_IN-Event uns umleitet
+  const { data, error } = await sb.auth.signInAnonymously();
+  if(error){
+    console.error('signInAnonymously', error);
+    toast('Konto konnte nicht angelegt werden: '+error.message);
+    routedIn=false; return false;
+  }
+  currentUser = data.user;
+  return true;
 }
 
 async function sendMagicLink(){
@@ -589,6 +616,15 @@ async function sendMagicLink(){
 }
 
 async function logout(){ await sb.auth.signOut(); location.reload(); }
+
+// E-Mail zum anonymen Konto hinzufügen — gleiche user_id, alle Daten bleiben
+window.secureAccount = async ()=>{
+  const email=(document.getElementById('secEmail')?.value||'').trim();
+  if(!email){ toast('Bitte E-Mail eingeben'); return; }
+  const { error } = await sb.auth.updateUser({ email });
+  if(error){ toast('Fehler: '+error.message); return; }
+  toast('Bestätigungs-Mail gesendet — bitte den Link darin öffnen');
+};
 
 async function onLoggedIn(){
   const hasProfile = await loadProfile();
@@ -810,6 +846,7 @@ $('#calibGo').onclick=()=>{
 
 /* ═══════════ PROFIL AUS KALIBRIERUNG ═══════════ */
 async function buildProfile(){
+  await ensureAccount();   // Schattenkonto anlegen, falls noch keins da ist
   const ans=S.calibAnswers;
   const prompt=`Eine Person hat 10 Aussagen über sich mit Ja oder Nein beantwortet. Daraus ergeben sich diese Merkmale:
 
@@ -1339,6 +1376,19 @@ function renderSelf(){
     html+=`<div class="selfquote"><div class="lab">Noch am Kennenlernen</div><div class="selfempty">Swipe ein paar Fragen — dann entsteht hier dein Bild.</div></div>`;
   }
   if(S.personalize&&sk)html+=`<div class="selfquote"><div class="lab">Aus deinen Bewertungen</div><div class="q">${sk.text.replace(/^(Mag:|Mag nicht:)/gm,m=>`<span class="k">${m}</span>`)}</div></div>`;
+
+  // Konto sichern: anonyme Schattenkonten können eine E-Mail hinterlegen
+  const anon = currentUser && currentUser.is_anonymous;
+  if(anon){
+    html+=`<div class="securebox">
+      <div class="lab">Sichere deinen Fortschritt</div>
+      <p class="securep">Bisher läuft alles ohne Anmeldung. Hinterleg eine E-Mail, damit dein Profil nicht verloren geht und du auf einem anderen Gerät weitermachen kannst.</p>
+      <input type="email" id="secEmail" class="secinput" placeholder="deine@email.de" />
+      <button class="bigbtn" onclick="secureAccount()">E-Mail sichern</button>
+    </div>`;
+  } else if(currentUser && currentUser.email){
+    html+=`<div class="securebox done"><div class="lab">✓ Konto gesichert</div><p class="securep">Als ${currentUser.email}. Du kannst dich damit überall anmelden.</p></div>`;
+  }
 
   // Tech
   const g=S.pool.filter(q=>q.src==='generiert').length;

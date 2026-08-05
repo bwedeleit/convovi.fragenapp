@@ -383,9 +383,16 @@ body.work .pfedit{background:var(--panel);color:var(--ink)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
 .toastbtn{background:var(--terra);color:#fff;border:0;border-radius:999px;padding:6px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
 .toastbtn:hover{background:var(--terra-deep)}
+/* Lade-Overlay */
+#loader{position:fixed;inset:0;display:grid;place-items:center;background:var(--bg);z-index:80;transition:opacity .3s ease}
+#loader.hidden{opacity:0;pointer-events:none}
+.spinner{width:38px;height:38px;border-radius:50%;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;animation:spin .8s linear infinite}
+body.work .spinner{border-color:rgba(43,38,34,.2);border-top-color:var(--terra)}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
+  <div id="loader"><div class="spinner"></div></div>
   <section class="screen hidden" id="login">
     <div class="picto">
       <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
@@ -552,8 +559,9 @@ function hideAllScreens(){
     const el=document.getElementById(id); if(el) el.classList.add('hidden');
   });
 }
+function hideLoader(){ const l=document.getElementById('loader'); if(l) l.classList.add('hidden'); }
 
-let routedIn=false, introShown=false;
+let routedIn=false, introShown=false, routeSettled=false;
 async function initAuth(){
   // Auf den Auth-Zustand reagieren. INITIAL_SESSION feuert einmal,
   // sobald Supabase die (evtl. anonyme) Session wiederhergestellt hat.
@@ -563,30 +571,41 @@ async function initAuth(){
   });
   try{ const { data:{ session } } = await sb.auth.getSession(); if(session) routeIn(session); }
   catch(e){ console.error('getSession', e); }
+  // Sicherheitsbremse: falls nach 6s noch nichts angezeigt wurde, nicht hängen bleiben
+  setTimeout(()=>{
+    if(routeSettled) return;
+    console.warn('Auth-Timeout — zeige Intro als Fallback');
+    hideAllScreens();
+    document.getElementById('calibIntro').classList.remove('hidden');
+    hideLoader();
+  }, 6000);
 }
 
 function routeIn(session){
   if(routedIn) return;
-  routedIn=true; currentUser=session.user;
+  routedIn=true; routeSettled=true; currentUser=session.user;
   onLoggedIn().catch(e=>{
     console.error('Login-Routing fehlgeschlagen', e);
     hideAllScreens();
     document.getElementById('calibIntro').classList.remove('hidden');
+    hideLoader();
   });
 }
 
 // Neuer Nutzer ohne Konto: direkt Modus 1 zeigen — kein Login-Zwang
 function showCalibIntro(){
   if(routedIn || introShown) return;
-  introShown=true;
+  introShown=true; routeSettled=true;
   hideAllScreens();
   document.getElementById('calibIntro').classList.remove('hidden');
+  hideLoader();
 }
 
 // Optionaler Login (für Rückkehrer, die schon eine E-Mail hinterlegt haben)
 function showLogin(){
   hideAllScreens();
   document.getElementById('login').classList.remove('hidden');
+  hideLoader();
 }
 
 // Legt bei Bedarf ein anonymes Schattenkonto an (ohne E-Mail)
@@ -627,16 +646,20 @@ window.secureAccount = async ()=>{
 };
 
 async function onLoggedIn(){
-  const hasProfile = await loadProfile();
-  try{ await loadLibrary(); }catch(e){ console.error('loadLibrary', e); }
-  try{ await loadSketch();  }catch(e){ console.error('loadSketch', e); }
-  try{ await loadSwipeStats(); }catch(e){ console.error('loadSwipeStats', e); }
+  const hasProfile = await loadProfile();   // nur das ist zum Routen nötig
   if(hasProfile){
-    startMainDirect();          // schon kalibriert → direkt zu den Fragen
+    startMainDirect();          // schon kalibriert → sofort zu den Fragen
   } else {
     hideAllScreens();
     document.getElementById('calibIntro').classList.remove('hidden'); // Erstnutzer
   }
+  hideLoader();
+  // Restliche Daten im Hintergrund nachladen — blockiert den Start nicht mehr
+  Promise.resolve()
+    .then(()=>loadLibrary()).catch(e=>console.error('loadLibrary', e))
+    .then(()=>loadSketch()).catch(e=>console.error('loadSketch', e))
+    .then(()=>loadSwipeStats()).catch(e=>console.error('loadSwipeStats', e))
+    .then(()=>{ updateLibBadge(); renderSelfIfOpen(); });
 }
 const fresh=()=>({
   role:'close',group:'solo',setting:'-',

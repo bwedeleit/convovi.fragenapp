@@ -47,6 +47,81 @@ svg{display:block}
 
 header.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .topspacer{min-height:42px}
+
+/* Einstellungs-Menüzeilen */
+.setlist{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-top:16px}
+.setrow{display:flex;align-items:center;gap:12px;width:100%;padding:14px 14px;background:#fff;border:0;border-bottom:1px solid var(--line);cursor:pointer;text-align:left;font-size:14.5px;color:var(--ink)}
+body.work .setrow{background:var(--panel)}
+.setrow:last-child{border-bottom:0}
+.seti{flex:none;width:22px;height:22px;color:var(--terra);display:grid;place-items:center}
+.seti svg{width:20px;height:20px}
+.sett{flex:1;font-weight:600}
+.setchev{color:var(--faint);font-size:20px;line-height:1}
+.dangerfull{width:100%;margin-top:18px;padding:13px;border:1px solid var(--nope);background:transparent;color:var(--nope);border-radius:14px;font-size:14px;font-weight:700;cursor:pointer}
+
+/* Galerie (Einzel-Ansicht) */
+.gallery{display:flex;align-items:stretch;gap:8px;margin:6px 0 12px}
+.galnav{flex:none;width:38px;border:1px solid var(--line);background:#fff;border-radius:14px;color:var(--dim);display:grid;place-items:center;cursor:pointer}
+body.work .galnav{background:var(--panel)}
+.galnav:disabled{opacity:.3}
+.galnav svg{width:20px;height:20px}
+.galcard{flex:1;min-height:230px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px 20px;display:flex;flex-direction:column;box-shadow:0 12px 30px -20px rgba(43,38,34,.4);touch-action:pan-y}
+.galcard .qtext{flex:1;display:flex;align-items:center;font-family:var(--disp);font-size:20px;line-height:1.35;color:var(--ink)}
+.galdots{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-bottom:6px}
+.gd{width:7px;height:7px;border-radius:50%;background:var(--line);cursor:pointer;transition:.15s}
+.gd.on{background:var(--terra);transform:scale(1.3)}
+.galcount{text-align:center;font-family:var(--mono);font-size:11px;color:var(--faint)}
+
+/* Feedback */
+.fbform{background:var(--accsoft);border-radius:16px;padding:14px;margin-bottom:20px}
+.fbinput{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:#fff;color:var(--ink);outline:none;resize:none;font-family:var(--sans)}
+body.work .fbinput{background:var(--panel)}
+.fbinput:focus{border-color:var(--terra)}
+.fbrow{display:flex;gap:8px;margin-top:8px}
+.fbrow .fbinput{flex:1}
+.fbsend{flex:none;width:46px;border:0;border-radius:12px;background:var(--terra);color:#fff;display:grid;place-items:center;cursor:pointer}
+.fbsend svg{width:19px;height:19px}
+.fbhead{font-family:var(--grotesk);font-weight:800;text-transform:uppercase;font-size:13px;letter-spacing:.03em;color:var(--dim);display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.fbcount{font-family:var(--mono);font-size:11px;background:var(--accsoft);color:var(--terra-deep);border-radius:999px;padding:2px 9px;font-weight:400}
+.fbempty{font-size:13px;color:var(--faint);font-style:italic;padding:8px 2px}
+.fblist{display:flex;flex-direction:column;gap:10px}
+.fbitem{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 14px}
+body.work .fbitem{background:var(--panel)}
+.fbmeta{font-size:11.5px;color:var(--faint);margin-bottom:5px}
+.fbmeta b{color:var(--dim)}
+.fbtext{font-size:14px;line-height:1.5;color:var(--ink);padding-right:44px}
+.fbheart{position:absolute;top:11px;right:11px;display:flex;flex-direction:column;align-items:center;gap:1px;background:none;border:0;color:var(--faint);cursor:pointer;font-size:11px}
+.fbheart svg{width:20px;height:20px}
+.fbheart.on{color:var(--terra)}
+
+/* Trending */
+.trlist{display:flex;flex-direction:column;gap:9px}
+.tritem{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 13px}
+body.work .tritem{background:var(--panel)}
+.trrank{flex:none;width:26px;height:26px;border-radius:8px;background:var(--accsoft);color:var(--terra-deep);font-family:var(--mono);font-weight:700;font-size:13px;display:grid;place-items:center}
+.trmain{flex:1;min-width:0}
+.trq{font-size:14px;line-height:1.4;color:var(--ink)}
+.trlikes{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:3px}
+.trsave{flex:none;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--terra);display:grid;place-items:center;cursor:pointer}
+.trsave svg{width:16px;height:16px}
+
+/* Björns Fragen: fixierter Kopf */
+.vtop{position:sticky;top:0;z-index:6;background:var(--surface);padding-bottom:8px;margin:0 -2px}
+
+/* Touch: kein hängenbleibender Hover-Zustand (roter/aktiver Button nach Tap) */
+@media (hover:none){
+  .cardbtn:hover{background:var(--card);color:var(--terra);border-color:var(--line)}
+  body.work .cardbtn:hover{background:var(--panel)}
+  .cardbtn.remove:hover{background:transparent;color:var(--faint);border-color:var(--line)}
+  .qremove:hover,.qremove:active{background:transparent;color:var(--faint);border-color:var(--line)}
+  .qperson:hover{background:transparent;color:var(--terra);border-color:var(--line)}
+  .vdel:hover{background:transparent;color:var(--faint);border-color:var(--line)}
+  .vedit:hover{background:transparent;color:var(--terra);border-color:var(--line)}
+  .trsave:hover{background:transparent;color:var(--terra);border-color:var(--line)}
+  .galnav:hover{background:#fff;color:var(--dim)}
+  .setrow:hover{background:#fff}
+  body.work .setrow:hover,body.work .galnav:hover{background:var(--panel)}
+}
 .securebox{background:var(--accsoft);border:1px solid var(--line);border-radius:16px;padding:16px;margin:16px 0}
 .securebox.done{background:rgba(46,168,140,.1);border-color:rgba(46,168,140,.3)}
 .securebox .lab{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--terra-deep);margin-bottom:8px}
@@ -525,8 +600,11 @@ html{-webkit-text-size-adjust:100%;touch-action:manipulation}
       <!-- top bar (nur Für dich) -->
       <div class="pbar" id="pbarMain">
         <span class="who modetag mode2" id="timeLab"></span>        <div class="picons">
-          <button class="iconbtn" id="btnSelf" title="Was Convovi über dich lernt">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 4.6L18.5 8.5 13.9 10.4 12 15l-1.9-4.6L5.5 8.5 10.1 6.6z"/><path d="M18.5 14l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z"/></svg>
+          <button class="iconbtn" id="btnTrending" title="Trending">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>
+          </button>
+          <button class="iconbtn" id="btnSelf" title="Einstellungen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1A2 2 0 1 1 6.9 3.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
           </button>
         </div>
       </div>
@@ -569,8 +647,16 @@ html{-webkit-text-size-adjust:100%;touch-action:manipulation}
 
 <!-- MODALS -->
 <div class="backdrop" id="mdSelf"><div class="sheet">
-  <div class="shead"><div><h2>So tickst du</h2><p id="selfSub">Was Convovi beim Swipen über dich lernt.</p></div><button class="xbtn" data-close="mdSelf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="shead"><div><h2>Einstellungen</h2><p id="selfSub"></p></div><button class="xbtn" data-close="mdSelf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <div class="sbody" id="selfBody"></div></div></div>
+
+<div class="backdrop" id="mdFeedback"><div class="sheet">
+  <div class="shead"><div><h2>Feedback</h2><p>Wünsch dir was — oder gib ein Herz.</p></div><button class="xbtn" data-close="mdFeedback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="sbody" id="feedbackBody"></div></div></div>
+
+<div class="backdrop" id="mdTrending"><div class="sheet">
+  <div class="shead"><div><h2>Trending</h2><p>Die beliebtesten Fragen der Community.</p></div><button class="xbtn" data-close="mdTrending"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="sbody" id="trendingBody"></div></div></div>
 
 <div class="backdrop" id="mdSave"><div class="sheet">
   <div class="shead"><div><h2>Wohin speichern?</h2><p id="saveSub">Frage zu einer Liste hinzufügen.</p></div><button class="xbtn" data-close="mdSave"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
@@ -902,7 +988,7 @@ const fresh=()=>({
   saved:[],liked:[],collections:[],persons:[],
   mode:'calib', view:'foryou', calibQueue:[], calibDone:0, calibAnswers:[], profile:null,
   personalize:true, allowGen:true,
-  lib:{tab:'liked',sel:false,picked:new Set(),naming:false,openColl:null,viewMode:'deck',deckIdx:0},
+  lib:{tab:'liked',sel:false,picked:new Set(),naming:false,openColl:null,viewMode:'list',deckIdx:0},
   videoOpen:null, saveTarget:null, vTab:'videos', pOpen:null,
   personQ:null, personPick:null, personStage:'pick', personNewOpen:false, personRel:'friend',
   swipes:0,likes:0,swipesTotal:0,cost:0,calls:0,generating:false,lastPrompt:null,
@@ -1414,7 +1500,7 @@ function renderVideos(){
     <button class="${S.vTab!=='tips'?'on':''}" onclick="vTab('videos')"><span class="lt">Fragen-Sets</span><span class="ln">${VIDEO_SETS.length}</span></button>
     <button class="${S.vTab==='tips'?'on':''}" onclick="vTab('tips')"><span class="lt">Gesprächs-Tipps</span><span class="ln">${PRINCIPLES.length}</span></button></div>`;
   if(S.vTab==='tips'){
-    host.innerHTML=`<div class="vhead">Björns Fragen</div>${tabs}
+    host.innerHTML=`<div class="vtop"><div class="vhead">Björns Fragen</div>${tabs}</div>
       <p class="vsub" style="margin-top:-4px">Acht Dinge, die aus einer guten Frage ein gutes Gespräch machen.</p>
       <div class="plist">`+PRINCIPLES.map((p,i)=>`
         <div class="pcard ${S.pOpen===i?'open':''}" onclick="pToggle(${i})">
@@ -1424,7 +1510,7 @@ function renderVideos(){
         </div>`).join('')+`</div>`;
     return;
   }
-  host.innerHTML=`<div class="vhead">Björns Fragen</div>${tabs}
+  host.innerHTML=`<div class="vtop"><div class="vhead">Björns Fragen</div>${tabs}</div>
     <p class="vsub" style="margin-top:-4px">Jede Frage, die ich auf Instagram & TikTok stelle — zum Nachswipen und Sammeln.</p>
     ${isAdmin()?`<button class="adminadd" onclick="openAdmin()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Neues Set hinzufügen</button>`:''}
     <div class="vlist">`+VIDEO_SETS.map(v=>`
@@ -1595,6 +1681,86 @@ function closeModal(id){$('#'+id).classList.remove('open');}
 $$('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
 $$('.backdrop').forEach(bd=>bd.addEventListener('click',e=>{if(e.target===bd)closeModal(bd.id);}));
 $('#btnSelf').onclick=()=>{renderSelf();openModal('mdSelf');};
+$('#btnTrending').onclick=()=>{openTrending();};
+
+// ═══════════ FEEDBACK ═══════════
+window.openFeedback=()=>{ renderFeedback([]); openModal('mdFeedback'); loadFeedback(); };
+function feedbackForm(){
+  return `<div class="fbform">
+    <textarea id="fbText" class="fbinput" rows="3" placeholder="Ich wünsche mir…"></textarea>
+    <div class="fbrow">
+      <input type="text" id="fbName" class="fbinput" placeholder="Dein Name (optional)" />
+      <button class="fbsend" onclick="submitFeedback()" title="Senden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+    </div></div>`;
+}
+function timeAgo(ts){
+  const d=Math.floor((Date.now()-new Date(ts).getTime())/1000);
+  if(d<60)return 'gerade eben'; if(d<3600)return `vor ${Math.floor(d/60)} Min`;
+  if(d<86400)return `vor ${Math.floor(d/3600)} Std`; if(d<2592000)return `vor ${Math.floor(d/86400)} Tagen`;
+  return `vor ${Math.floor(d/2592000)} Monaten`;
+}
+let myHearts=new Set();
+function renderFeedback(list){
+  let html=feedbackForm();
+  html+=`<div class="fbhead">Community Feed <span class="fbcount">${list.length}</span></div>`;
+  if(!list.length){ html+=`<div class="fbempty">Sei die erste Stimme — teil deinen Wunsch.</div>`; }
+  else html+=`<div class="fblist">`+list.map(f=>`
+    <div class="fbitem">
+      <div class="fbmeta"><b>${f.name?escapeHtml(f.name):'Anonym'}</b> · <span>${timeAgo(f.created_at)}</span></div>
+      <div class="fbtext">${escapeHtml(f.text)}</div>
+      <button class="fbheart ${myHearts.has(f.id)?'on':''}" onclick="toggleHeart('${f.id}')">
+        <svg viewBox="0 0 24 24" fill="${myHearts.has(f.id)?'currentColor':'none'}" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21l-1.5-1.4C5.4 15 2 11.9 2 8.2 2 5.4 4.2 3.3 7 3.3c1.6 0 3.1.7 4 1.9.9-1.2 2.4-1.9 4-1.9 2.8 0 5 2.1 5 4.9 0 3.7-3.4 6.8-8.5 11.4L12 21z"/></svg>
+        <span>${f.hearts||0}</span>
+      </button>
+    </div>`).join('')+`</div>`;
+  $('#feedbackBody').innerHTML=html;
+}
+function escapeHtml(s){return (s||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));}
+async function loadFeedback(){
+  if(!currentUser)return;
+  try{
+    const { data:mine } = await sb.from('feedback_hearts').select('feedback_id').eq('user_id',currentUser.id);
+    myHearts = new Set((mine||[]).map(r=>r.feedback_id));
+    const { data, error } = await sb.from('feedback').select('*').order('hearts',{ascending:false}).order('created_at',{ascending:false}).limit(100);
+    if(error){ console.error('loadFeedback',error); return; }
+    renderFeedback(data||[]);
+  }catch(e){ console.error('loadFeedback',e); }
+}
+window.submitFeedback=async()=>{
+  const text=(document.getElementById('fbText').value||'').trim();
+  const name=(document.getElementById('fbName').value||'').trim();
+  if(!text){ toast('Bitte etwas schreiben'); return; }
+  if(!currentUser){ toast('Kurz warten…'); return; }
+  const { error } = await sb.from('feedback').insert({ text, name:name||null });
+  if(error){ toast('Fehler: '+error.message); return; }
+  toast('Danke für deinen Beitrag!');
+  await loadFeedback();
+};
+window.toggleHeart=async(id)=>{
+  if(!currentUser)return;
+  try{
+    const { data, error } = await sb.rpc('toggle_feedback_heart', { fid:id });
+    if(error){ console.error('toggleHeart',error); toast('Fehler: '+error.message); return; }
+    await loadFeedback();
+  }catch(e){ console.error('toggleHeart',e); }
+};
+
+// ═══════════ TRENDING ═══════════
+window.openTrending=()=>{ $('#trendingBody').innerHTML='<div class="fbempty">Lädt…</div>'; openModal('mdTrending'); loadTrending(); };
+async function loadTrending(){
+  try{
+    const { data, error } = await sb.rpc('trending_questions');
+    if(error){ console.error('loadTrending',error); $('#trendingBody').innerHTML='<div class="fbempty">Konnte nicht laden.</div>'; return; }
+    if(!data||!data.length){ $('#trendingBody').innerHTML='<div class="fbempty">Noch keine Trends — swipe ein paar Fragen nach rechts.</div>'; return; }
+    let html='<div class="trlist">'+data.map((r,i)=>`
+      <div class="tritem">
+        <span class="trrank">${i+1}</span>
+        <div class="trmain"><div class="trq">${escapeHtml(r.question_text)}</div><div class="trlikes">${r.likes}× mag ich</div></div>
+        <button class="trsave" onclick="openSaveTarget(decodeURIComponent('${encodeURIComponent(r.question_text)}'))" title="Speichern"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+      </div>`).join('')+'</div>';
+    $('#trendingBody').innerHTML=html;
+  }catch(e){ console.error('loadTrending',e); $('#trendingBody').innerHTML='<div class="fbempty">Konnte nicht laden.</div>'; }
+}
 
 /* SELF */
 function insightRows(){
@@ -1613,10 +1779,10 @@ function insightRows(){
   return rows;
 }
 function renderSelf(){
-  $('#selfSub').textContent=`${S.swipesTotal} Swipes insgesamt · dein Profil`;
-  const sk=S.sketches[S.role];let html='';
+  $('#selfSub').textContent = currentUser && currentUser.email ? currentUser.email : `${S.swipesTotal} Swipes insgesamt`;
+  let html='';
 
-  // Steuerung: Personalisierung an/aus, KI-Fragen an/aus
+  // Personalisierung
   html+=`<div class="ctlbox">
     <div class="ctlrow"><div class="ctltx"><b>Personalisierung</b><span>Fragen an deine Vorlieben anpassen</span></div>
       <button class="switch ${S.personalize?'on':''}" onclick="toggleP('personalize')"><span></span></button></div>
@@ -1624,59 +1790,43 @@ function renderSelf(){
       <button class="switch ${S.allowGen?'on':''}" onclick="toggleP('allowGen')"><span></span></button></div>
   </div>`;
 
-  // Editierbares Persönlichkeitsbild
-  if(S.profile){
-    html+=`<div class="selfquote"><div class="lab">Aus dem Kennenlernen · antippen zum Ändern</div>
-      <textarea id="pfBild" class="pfedit" rows="3" oninput="S.profile.bild=this.value;saveProfile()">${S.profile.bild}</textarea>
-      <div class="pfworte" id="pfWorte">${(S.profile.worte||[]).map((w,i)=>`<span class="wchip">${w}<b onclick="rmWort(${i})">×</b></span>`).join('')}
-        <input type="text" id="pfAdd" placeholder="+ Wort" onkeydown="if(event.key==='Enter'){addWort(this.value);this.value='';}" /></div>
-    </div>`;
-  }else{
-    html+=`<div class="selfquote"><div class="lab">Noch am Kennenlernen</div><div class="selfempty">Swipe ein paar Fragen — dann entsteht hier dein Bild.</div></div>`;
-  }
-  if(S.personalize&&sk)html+=`<div class="selfquote"><div class="lab">Aus deinen Bewertungen</div><div class="q">${sk.text.replace(/^(Mag:|Mag nicht:)/gm,m=>`<span class="k">${m}</span>`)}</div></div>`;
-
-  // Konto sichern: anonyme Schattenkonten können eine E-Mail hinterlegen
+  // Konto sichern
   const anon = currentUser && currentUser.is_anonymous;
   if(anon){
     html+=`<div class="securebox">
-      <div class="lab">Sichere deinen Fortschritt</div>
-      <p class="securep">Bisher läuft alles ohne Anmeldung. Hinterleg eine E-Mail, damit dein Profil nicht verloren geht und du auf einem anderen Gerät weitermachen kannst.</p>
+      <div class="lab">Konto sichern</div>
+      <p class="securep">Hinterleg eine E-Mail, damit dein Profil nicht verloren geht und du dich überall anmelden kannst.</p>
       <input type="email" id="secEmail" class="secinput" placeholder="deine@email.de" />
-      <button class="bigbtn" onclick="secureAccount()">E-Mail sichern</button>
+      <button class="bigbtn" onclick="secureAccount()">E-Mail verbinden</button>
     </div>`;
   } else if(currentUser && currentUser.email){
-    html+=`<div class="securebox done"><div class="lab">✓ Konto gesichert</div><p class="securep">Als ${currentUser.email}. Du kannst dich damit überall anmelden.</p></div>`;
+    html+=`<div class="securebox done"><div class="lab">✓ Konto gesichert</div><p class="securep">Angemeldet als ${currentUser.email}.</p></div>`;
   }
 
-  // Tech
-  const g=S.pool.filter(q=>q.src==='generiert').length;
-  let poolBar='';for(let i=0;i<18;i++){const q=S.pool[i];poolBar+=`<i class="${q?(q.src==='kuratiert'?'kur':'gen'):'done'}"></i>`;}
-  const perQ=S.cost/Math.max(1,S.swipes);
-  const logHtml=logs.length?logs.map(l=>`<div class="li ${l.kind}"><span class="ic">${l.ic}</span><span class="tx">${l.txt}</span></div>`).join(''):'<div style="font-size:12px;color:var(--faint);font-style:italic">Noch nichts.</div>';
-  html+=`<details class="tech"><summary>Hinter den Kulissen — für Neugierige</summary><div class="techgrid">
-    <div class="tsec"><h4>Fragen-Vorrat · ${S.pool.length} übrig, ${g} generiert</h4><div class="pool">${poolBar}</div>
-      <div class="poolleg"><span><b style="background:var(--terra-soft)"></b>kuratiert</span><span><b style="background:var(--terra)"></b>generiert</span></div></div>
-    <div class="tsec"><h4>Echte Kosten</h4><div class="costrow">
-      <div class="costc"><div class="cl">Diese Sitzung</div><div class="cv">$${S.cost.toFixed(4)}</div><div class="cs">${S.calls} API-Aufruf${S.calls===1?'':'e'}</div></div>
-      <div class="costc"><div class="cl">Hochgerechnet</div><div class="cv">${S.cost>0?'$'+(perQ*200*1000).toFixed(0):'—'}</div><div class="cs">1.000 User · 200/Mon.</div></div></div></div>
-    <div class="tsec"><h4>Verlauf</h4><div class="log">${logHtml}</div></div>
-  </div></details>
-
-  <div class="legalrow">
-    <button class="linkbtn" onclick="openModal('mdImpressum')">Impressum</button>
-    <button class="linkbtn" onclick="openModal('mdPriv')">Datenschutz</button>
-    <button class="linkbtn" onclick="openModal('mdAGB')">Nutzungsbedingungen</button>
-  </div>
-  <div class="privrow">
-    <span class="linkbtn" style="cursor:default">Rechtliches</span>
-    <button class="dangerbtn" onclick="deleteProfile()">Profil löschen</button>
+  // Menüzeilen: Feedback + Rechtliches
+  html+=`<div class="setlist">
+    <button class="setrow" onclick="openFeedback()"><span class="seti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-11.9 7.6L3 21l1.9-6.1A8.4 8.4 0 1 1 21 11.5z"/></svg></span><span class="sett">Feedback &amp; Wünsche</span><span class="setchev">›</span></button>
+    <button class="setrow" onclick="openModal('mdImpressum')"><span class="seti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg></span><span class="sett">Impressum</span><span class="setchev">›</span></button>
+    <button class="setrow" onclick="openModal('mdPriv')"><span class="seti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/></svg></span><span class="sett">Datenschutz</span><span class="setchev">›</span></button>
+    <button class="setrow" onclick="openModal('mdAGB')"><span class="seti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8l4 4v14H4V3z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></span><span class="sett">Nutzungsbedingungen</span><span class="setchev">›</span></button>
   </div>`;
+
+  // Abmelden + Profil löschen (nur wenn Profil erstellt)
+  if(S.profile){
+    html+=`<div class="setlist" style="margin-top:14px">
+      <button class="setrow" onclick="doLogout()"><span class="seti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg></span><span class="sett">Abmelden</span><span class="setchev">›</span></button>
+    </div>
+    <button class="dangerfull" onclick="deleteProfile()">Profil löschen</button>`;
+  }
   $('#selfBody').innerHTML=html;
 }
+window.doLogout=async()=>{
+  if(currentUser && currentUser.is_anonymous){
+    if(!confirm('Ohne hinterlegte E-Mail verlierst du den Zugang zu diesem Profil. Trotzdem abmelden?'))return;
+  }
+  await sb.auth.signOut(); location.reload();
+};
 window.toggleP=k=>{S[k]=!S[k];S.pool=[];renderSelf();refill();toast((k==='personalize'?'Personalisierung ':'KI-Fragen ')+(S[k]?'an':'aus'));saveProfile();};
-window.rmWort=i=>{S.profile.worte.splice(i,1);renderSelf();saveProfile();};
-window.addWort=v=>{v=v.trim();if(v&&S.profile){(S.profile.worte=S.profile.worte||[]).push(v);renderSelf();saveProfile();}};
 window.deleteProfile=async()=>{
   if(!confirm('Dein Profil und alle gelernten Daten löschen? Das kann nicht rückgängig gemacht werden.'))return;
   if(currentUser){
@@ -1714,17 +1864,29 @@ function renderLibrary(){
   }
   const list=curList();
   html+=`<div class="libmode">
-    <button class="${L.viewMode!=='list'?'on':''}" onclick="libViewMode('deck')">Deck</button>
-    <button class="${L.viewMode==='list'?'on':''}" onclick="libViewMode('list')">Liste</button></div>`;
+    <button class="${L.viewMode!=='single'?'on':''}" onclick="libViewMode('list')">Liste</button>
+    <button class="${L.viewMode==='single'?'on':''}" onclick="libViewMode('single')">Einzel</button></div>`;
   if(!list.length){html+=L.tab==='liked'?`<div class="libempty">Noch nichts gemocht.<br>Swipe eine Frage nach rechts.</div>`:`<div class="libempty">Noch nichts gemerkt.<br>Swipe nach oben oder speichere aus einem Video.</div>`;host.innerHTML=html;return;}
 
-  if(L.viewMode!=='list'){
-    const idx=Math.max(0,Math.min(L.deckIdx,list.length));
-    html+=`<div class="deck libdeck" id="libDeck"></div>
-      <div class="libdeckbar"><span>${Math.min(idx+1,list.length)} / ${list.length} · wische durch</span>
-      <button class="minibtn" onclick="libDeckReset()">Von vorn</button></div>`;
+  if(L.viewMode==='single'){
+    const idx=Math.max(0,Math.min(L.deckIdx,list.length-1));
+    const dots = list.length<=15
+      ? `<div class="galdots">${list.map((_,i)=>`<span class="gd ${i===idx?'on':''}" onclick="libGo(${i})"></span>`).join('')}</div>`
+      : `<div class="galcount">${idx+1} / ${list.length}</div>`;
+    html+=`<div class="gallery">
+        <button class="galnav prev" onclick="libGo(${idx-1})" ${idx===0?'disabled':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <div class="galcard" id="galCard">
+          <div class="qtext">${list[idx].text}</div>
+          <div class="cardacts">
+            <button class="cardbtn share" onclick="shareQuestion(curList()[${idx}].text)" title="Teilen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 15V4M8 7l4-3 4 3"/></svg></button>
+            <button class="cardbtn person" onclick="libAssignPerson(${idx})" title="Für eine Person"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.2"/><path d="M4 19c0-3.3 2.7-5.5 6-5.5 1 0 1.9.2 2.7.5"/><path d="M18 15v6M15 18h6"/></svg></button>
+            <button class="cardbtn remove" onclick="libRemoveAt(${idx})" title="Entfernen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
+        </div>
+        <button class="galnav next" onclick="libGo(${idx+1})" ${idx>=list.length-1?'disabled':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>${dots}`;
     host.innerHTML=html;
-    buildLibDeck(list, idx);
+    const gc=$('#galCard'); if(gc) galSwipe(gc, idx, list.length);
     return;
   }
 
@@ -1735,49 +1897,23 @@ function renderLibrary(){
   host.innerHTML=html;
 }
 
-/* Bibliotheks-Deck: durch Mag-ich / Gemerkt wischen */
-function buildLibDeck(list, idx){
-  const d=$('#libDeck'); if(!d) return; d.innerHTML='';
-  if(idx>=list.length){ d.innerHTML='<div class="libdeckdone"><div>Alle durchgeschaut ✓</div></div>'; return; }
-  for(let k=Math.min(idx+2,list.length-1);k>idx;k--){
-    const sh=document.createElement('div'); sh.className='qcard libshell';
-    sh.style.zIndex=String(3-(k-idx));
-    sh.style.transform=`scale(${1-(k-idx)*0.04}) translateY(${(k-idx)*10}px)`;
-    d.appendChild(sh);
-  }
-  const q=list[idx];
-  const el=document.createElement('div'); el.className='qcard top'; el.style.zIndex='10';
-  el.innerHTML=`<div class="qtext">${q.text}</div>
-    <div class="cardacts">
-      <button class="cardbtn share" title="Frage teilen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 15V4M8 7l4-3 4 3"/></svg></button>
-      <button class="cardbtn person" title="Für eine Person merken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.2"/><path d="M4 19c0-3.3 2.7-5.5 6-5.5 1 0 1.9.2 2.7.5"/><path d="M18 15v6M15 18h6"/></svg></button>
-      <button class="cardbtn remove" title="Aus der Liste entfernen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    </div>`;
-  d.appendChild(el);
-  const stop=b=>b&&b.addEventListener('pointerdown',e=>e.stopPropagation());
-  const sb2=el.querySelector('.share'), pb=el.querySelector('.person'), rb=el.querySelector('.remove');
-  [sb2,pb,rb].forEach(stop);
-  if(sb2)sb2.onclick=e=>{e.stopPropagation();shareQuestion(q.text);};
-  if(pb)pb.onclick=e=>{e.stopPropagation();openPersonModal(q.text);};
-  if(rb)rb.onclick=e=>{e.stopPropagation();removeSaved(q.text);};
-  libDeckDrag(el);
-}
-function libDeckDrag(el){
-  let sx=0,sy=0,dragging=false;
-  el.addEventListener('pointerdown',e=>{ if(e.target.closest('.cardbtn'))return; dragging=true; sx=e.clientX; sy=e.clientY; try{el.setPointerCapture(e.pointerId);}catch(_){}; el.style.transition='none'; });
-  el.addEventListener('pointermove',e=>{ if(!dragging)return; const dx=e.clientX-sx, dy=e.clientY-sy; el.style.transform=`translate(${dx}px,${dy*0.2}px) rotate(${dx*0.04}deg)`; });
-  const end=e=>{ if(!dragging)return; dragging=false; const dx=(e.clientX||sx)-sx;
-    if(Math.abs(dx)>90){ el.style.transition='.25s ease'; el.style.transform=`translate(${dx>0?600:-600}px,0) rotate(${dx>0?18:-18}deg)`; el.style.opacity='0'; S.lib.deckIdx++; setTimeout(renderLibrary,190); }
-    else { el.style.transition='.2s'; el.style.transform='none'; } };
+/* Galerie: eine Frage, vor/zurück per Pfeil, Punkte oder Swipe */
+window.libGo=i=>{const list=curList(); if(i<0||i>=list.length)return; S.lib.deckIdx=i; renderLibrary();};
+function galSwipe(el, idx, len){
+  let sx=0,dragging=false;
+  el.addEventListener('pointerdown',e=>{ if(e.target.closest('.cardbtn'))return; dragging=true; sx=e.clientX; el.style.transition='none'; });
+  el.addEventListener('pointermove',e=>{ if(!dragging)return; el.style.transform=`translateX(${e.clientX-sx}px)`; });
+  const end=e=>{ if(!dragging)return; dragging=false; const dx=(e.clientX||sx)-sx; el.style.transition='.2s';
+    if(dx<-60 && idx<len-1){ libGo(idx+1); } else if(dx>60 && idx>0){ libGo(idx-1); } else { el.style.transform='none'; } };
   el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end);
 }
 window.libViewMode=v=>{S.lib.viewMode=v; S.lib.deckIdx=0; renderLibrary();};
-window.libDeckReset=()=>{S.lib.deckIdx=0; renderLibrary();};
 window.libRemoveAt=i=>{const q=curList()[i]; if(q)removeSaved(q.text);};
 async function removeSaved(text){
   const tab=S.lib.tab;
   if(tab==='liked') S.liked=S.liked.filter(q=>q.text!==text);
   else S.saved=S.saved.filter(q=>q.text!==text);
+  if(S.lib.deckIdx>=curList().length) S.lib.deckIdx=Math.max(0,curList().length-1);
   updateLibBadge(); renderLibrary(); toast('Entfernt');
   if(currentUser){
     const { error } = await sb.from('saved_questions').delete()

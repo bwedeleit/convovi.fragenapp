@@ -968,6 +968,9 @@ window.secureAccount = async ()=>{
 
 async function onLoggedIn(){
   const hasProfile = await loadProfile();   // nur das ist zum Routen nötig
+  // Für saubere Entdopplung & Personalisierung: diese Daten VOR dem ersten Stapel laden
+  try{ await Promise.all([ loadLibrary(), loadSeen(), loadSketch() ]); }
+  catch(e){ console.error('onLoggedIn loads', e); }
   if(hasProfile){
     startMainDirect();          // schon kalibriert → sofort zu den Fragen
   } else {
@@ -975,16 +978,13 @@ async function onLoggedIn(){
     document.getElementById('calibIntro').classList.remove('hidden'); // Erstnutzer
   }
   hideLoader();
-  // Restliche Daten im Hintergrund nachladen — blockiert den Start nicht mehr
-  Promise.resolve()
-    .then(()=>loadLibrary()).catch(e=>console.error('loadLibrary', e))
-    .then(()=>loadSketch()).catch(e=>console.error('loadSketch', e))
-    .then(()=>loadSwipeStats()).catch(e=>console.error('loadSwipeStats', e))
-    .then(()=>{ updateLibBadge(); renderSelfIfOpen(); });
+  updateLibBadge(); renderSelfIfOpen();
+  // Nur Anzeige-Statistik im Hintergrund — blockiert den Start nicht
+  loadSwipeStats().then(()=>renderSelfIfOpen()).catch(e=>console.error('loadSwipeStats', e));
 }
 const fresh=()=>({
   role:'close',group:'solo',setting:'-',
-  sketches:{},pool:[],seen:[],reactions:[],
+  sketches:{},pool:[],seen:[],seenAll:new Set(),reactions:[],
   saved:[],liked:[],collections:[],persons:[],
   mode:'calib', view:'foryou', calibQueue:[], calibDone:0, calibAnswers:[], profile:null,
   personalize:true, allowGen:true,
@@ -1220,8 +1220,40 @@ Antworte NUR mit JSON, ohne Backticks:
 
 /* ═══════════ AUSWAHL (ohne Tiefe) ═══════════ */
 const likedTones=()=>S.personalize?(S.sketches[S.role]?.tones||null):null;
+/* ═══════════ AUSSCHLUSS & PROGRESSION ═══════════ */
+// Alle Fragen, die NIE (wieder) erscheinen dürfen:
+// diese Sitzung gesehen + je gesehen (DB) + gemocht + gemerkt + in Sammlungen + schon im Stapel.
+function excludeSet(){
+  const s=new Set(S.seen);
+  if(S.seenAll) S.seenAll.forEach(t=>s.add(t));
+  (S.liked||[]).forEach(q=>s.add(q.text));
+  (S.saved||[]).forEach(q=>s.add(q.text));
+  (S.collections||[]).forEach(c=>(c.texts||[]).forEach(t=>s.add(t)));
+  (S.pool||[]).forEach(q=>s.add(q.text));
+  return s;
+}
+// Alle je geswipten Fragen aus der DB laden (nur Text, leichtgewichtig)
+async function loadSeen(){
+  if(!currentUser) return;
+  S.seenAll=new Set();
+  const { data, error } = await sb.from('swipes').select('question_text').eq('user_id',currentUser.id).limit(2000);
+  if(error){ console.error('loadSeen', error); return; }
+  (data||[]).forEach(r=>{ if(r.question_text) S.seenAll.add(r.question_text); });
+}
+// Anteil generierter Fragen — wächst mit den Erkenntnissen über die Person
+function genShare(){
+  if(!S.allowGen) return 0;
+  const n=Math.max(S.reactions.length, S.swipesTotal||0);
+  const haveSketch = S.personalize && !!S.sketches[S.role];
+  if(n < 8)  return 0;      // Startphase: erst kuratiert sammeln
+  if(!haveSketch) return 0.25;
+  if(n < 20) return 0.45;
+  if(n < 40) return 0.6;
+  return 0.78;             // reife Phase: überwiegend personalisiert generiert
+}
+
 function pickCurated(n){
-  const r=roleOf(S.role); const seen=new Set(S.seen);
+  const r=roleOf(S.role); const seen=excludeSet();
   let c=CURATED.filter(q=>q.ctx===r.ctx&&!seen.has(q.text));
   if(S.group==='round') c=c.filter(q=>q.effort!=='story');
   const tones=likedTones();
@@ -1244,7 +1276,12 @@ function styleAnchors(){
 }
 function buildPrompt(){
   const sk=S.sketches[S.role];
-  const anchors=styleAnchors(),avoid=S.seen.slice(-30);
+  const anchors=styleAnchors();
+  const avoid=[...new Set([
+    ...S.seen.slice(-20),
+    ...(S.liked||[]).slice(0,15).map(q=>q.text),
+    ...(S.saved||[]).slice(0,10).map(q=>q.text)
+  ])].slice(0,40);
   return `Du schreibst Fragen für Convovi, ein Gesprächsspiel, das Menschen einander näherbringt.
 
 REGELN — nicht verhandelbar:
@@ -1278,7 +1315,7 @@ function rejects(text){
   if(wc>24)return 'zu lang'; if(wc<4)return 'zu kurz';
   if(/^(was bedeutet|ist |glaubst du)/i.test(text.trim()))return 'abstrakt';
   if(/reise|authentisch|selbstfürsorge|achtsam|resilien/i.test(text))return 'Coaching';
-  if(S.seen.includes(text))return 'Dublette';
+  if(excludeSet().has(text))return 'Dublette';
   return null;
 }
 async function generateBatch(){
@@ -1342,14 +1379,23 @@ Antworte NUR mit JSON, ohne Backticks:
 async function refill(){
   if(S.mode!=='main')return;
   if(S.pool.length>REFILL_AT||S.generating)return;
-  const need=18-S.pool.length, genWanted=S.allowGen?Math.round(need*GEN_SHARE):0;
-  S.pool.push(...pickCurated(need-genWanted));
+  const need=18-S.pool.length;
+  const share=genShare();
+  let genWanted=Math.round(need*share);
+  const cur=pickCurated(need-genWanted);
+  // Kuratierte Fragen erschöpft? Dann füllt die Generierung die Lücke.
+  const shortfall=(need-genWanted)-cur.length;
+  if(shortfall>0 && S.allowGen) genWanted+=shortfall;
+  S.pool.push(...cur);
   if(S.view==='foryou')renderDeck();          // sofort anzeigen — nicht auf die KI warten
   renderSelfIfOpen();
   if(genWanted>0){
     try{
       const gen=await generateBatch();
-      const merged=[],a=[...S.pool],b=[...gen];
+      const excl=excludeSet();                 // gemocht/gemerkt/gesehen/im Stapel
+      const inBatch=new Set(); const clean=[];
+      for(const q of gen){ if(excl.has(q.text)||inBatch.has(q.text))continue; inBatch.add(q.text); clean.push(q); }
+      const merged=[],a=[...S.pool],b=clean;
       while(a.length||b.length){if(a.length)merged.push(a.shift());if(b.length&&Math.random()<0.55)merged.push(b.shift());else if(!a.length&&b.length)merged.push(b.shift());}
       S.pool=merged;
       if(S.view==='foryou')renderDeck();

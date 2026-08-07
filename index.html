@@ -104,6 +104,22 @@ body.work .tritem{background:var(--panel)}
 .trlikes{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:3px}
 .trsave{flex:none;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--terra);display:grid;place-items:center;cursor:pointer}
 .trsave svg{width:16px;height:16px}
+/* Analytics-Dashboard */
+.kgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+.kpi{background:var(--accsoft);border-radius:14px;padding:14px}
+.kv{font-family:var(--disp);font-size:24px;font-weight:600;color:var(--terra-deep);line-height:1}
+.kl{font-size:11.5px;color:var(--dim);margin-top:5px}
+.ahead{font-family:var(--grotesk);font-weight:800;text-transform:uppercase;font-size:12px;letter-spacing:.04em;color:var(--dim);margin:22px 0 12px}
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar{display:grid;grid-template-columns:120px 1fr auto;align-items:center;gap:10px}
+.bl{font-size:12px;color:var(--ink)}
+.btrack{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.bfill{height:100%;background:var(--terra);border-radius:99px}
+.bv{font-family:var(--mono);font-size:10.5px;color:var(--faint);white-space:nowrap}
+.alist{display:flex;flex-direction:column;gap:1px;background:var(--line);border-radius:12px;overflow:hidden}
+.arow{display:flex;justify-content:space-between;align-items:center;padding:11px 13px;background:#fff;font-size:13px}
+body.work .arow{background:var(--panel)}
+.arow b{font-family:var(--mono);color:var(--terra-deep)}
 
 /* Björns Fragen: fixierter Kopf */
 .vtop{position:sticky;top:0;z-index:6;background:var(--surface);padding-bottom:8px;margin:0 -2px}
@@ -658,6 +674,10 @@ html{-webkit-text-size-adjust:100%;touch-action:manipulation}
   <div class="shead"><div><h2>Trending</h2><p>Die beliebtesten Fragen der Community.</p></div><button class="xbtn" data-close="mdTrending"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <div class="sbody" id="trendingBody"></div></div></div>
 
+<div class="backdrop" id="mdAnalytics"><div class="sheet">
+  <div class="shead"><div><h2>Analytics</h2><p>Testphase — nur für dich sichtbar.</p></div><button class="xbtn" data-close="mdAnalytics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="sbody" id="analyticsBody"></div></div></div>
+
 <div class="backdrop" id="mdSave"><div class="sheet">
   <div class="shead"><div><h2>Wohin speichern?</h2><p id="saveSub">Frage zu einer Liste hinzufügen.</p></div><button class="xbtn" data-close="mdSave"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <div class="sbody" id="saveBody"></div></div></div>
@@ -679,6 +699,7 @@ html{-webkit-text-size-adjust:100%;touch-action:manipulation}
     <h3>3. Speicherung auf dem Gerät</h3>Zur Ausführung der Kernfunktionen (Login-Sitzung, Zwischenspeichern) nutzen wir <b>Local Storage</b> deines Browsers. Es werden keine Tracking- oder Marketing-Cookies gesetzt.
     <h3>4. Zwecke &amp; Rechtsgrundlagen</h3>Wir verarbeiten deine Daten, um dir passende Gesprächsfragen zu zeigen und dein Erlebnis zu personalisieren. Rechtsgrundlagen sind die Erfüllung des Nutzungsvertrags (Art. 6 Abs. 1 lit. b DSGVO), dein berechtigtes Interesse an einem stabilen Betrieb (lit. f) sowie deine Einwilligung für die Personalisierung (lit. a), die du jederzeit über die Schalter in „So tickst du" widerrufen kannst.
     <h3>5. KI-Verarbeitung</h3>Für generierte Fragen übermitteln wir deine abgeleiteten Vorlieben (nicht deinen Namen) an Anthropic. Du kannst die KI-Generierung in deinem Profil ausschalten.
+    <h3>5a. Nutzungsanalyse</h3>Zur Verbesserung der App erfassen wir in eigener Verantwortung anonyme Nutzungsereignisse – etwa welche Bereiche wie lange genutzt werden und aggregierte Interaktionen (z. B. Anzahl der Swipes). Diese Auswertung erfolgt ausschließlich auf unseren eigenen Servern (Supabase, EU-Region), ohne Weitergabe an Dritt-Analysedienste und ohne geräteübergreifende Wiedererkennung zu Werbezwecken. Rechtsgrundlage ist unser berechtigtes Interesse an einem funktionierenden, verbesserten Angebot (Art. 6 Abs. 1 lit. f DSGVO); du kannst dem jederzeit unter hello@convovi.app widersprechen.
     <h3>6. Dienstleister &amp; USA-Übermittlung</h3>Supabase (Datenbank, EU-Region Frankfurt), Vercel (Hosting) und Anthropic (KI). Mit allen bestehen Auftragsverarbeitungsverträge. Soweit dabei Daten in die USA übermittelt werden (Vercel, Anthropic), stützt sich die Übermittlung auf das <b>EU-US Data Privacy Framework</b> bzw. die Standardvertragsklauseln der EU-Kommission.
     <h3>7. Schriftarten</h3>Verwendete Schriftarten werden lokal auf unserem Server ausgeliefert; es findet keine Verbindung zu Google-Servern statt.
     <h3>8. Speicherdauer</h3>Solange dein Profil besteht. Du kannst es jederzeit in „So tickst du" → „Profil löschen" vollständig und endgültig (Hard Delete) aus der Datenbank entfernen.
@@ -966,6 +987,7 @@ window.secureAccount = async ()=>{
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ toast('Bitte eine gültige E-Mail eingeben'); return; }
   const { error } = await sb.auth.updateUser({ email });
   if(error){ toast('Fehler: '+error.message); return; }
+  track('email_connect');
   toast('Bestätigungs-Mail gesendet — bitte den Link darin öffnen');
 };
 
@@ -981,6 +1003,7 @@ async function onLoggedIn(){
     document.getElementById('calibIntro').classList.remove('hidden'); // Erstnutzer
   }
   hideLoader();
+  track('session_start');
   updateLibBadge(); renderSelfIfOpen();
   // Nur Anzeige-Statistik im Hintergrund — blockiert den Start nicht
   loadSwipeStats().then(()=>renderSelfIfOpen()).catch(e=>console.error('loadSwipeStats', e));
@@ -1167,6 +1190,7 @@ function startCalibration(){
   $('#mainNote').textContent='Swipe nach rechts, wenn es auf dich zutrifft.';
   S.pool=[...S.calibQueue];
   updateCalibBar(); renderDeck();
+  track('calibration_start'); enterScreen('kalibrierung');
 }
 function updateCalibBar(){
   $('#calibNow').textContent=Math.min(S.calibDone+1,CALIB_N);
@@ -1194,6 +1218,7 @@ $('#calibGo').onclick=()=>{
 /* ═══════════ PROFIL AUS KALIBRIERUNG ═══════════ */
 async function buildProfile(){
   await ensureAccount();   // Schattenkonto anlegen, falls noch keins da ist
+  track('calibration_complete');
   const ans=S.calibAnswers;
   const prompt=`Eine Person hat 10 Aussagen über sich mit Ja oder Nein beantwortet. Daraus ergeben sich diese Merkmale:
 
@@ -1516,7 +1541,7 @@ async function commit(q,re){
   S.swipes++; S.swipesTotal++; if(re!=='skip')S.likes++;
   S.seen.push(q.text); S.reactions.push({role:S.role,re,q});
   if(re==='like'){if(!S.liked.some(x=>x.text===q.text))S.liked.unshift({...q});}
-  if(re==='save'){if(!S.saved.some(x=>x.text===q.text))S.saved.unshift({...q}); toastAction('Gemerkt','+ Person zuordnen',()=>openPersonModal(q.text));}
+  if(re==='save'){if(!S.saved.some(x=>x.text===q.text))S.saved.unshift({...q}); toastAction('Gemerkt','+ Person zuordnen',()=>openPersonModal(q.text)); track('save');}
   updateLibBadge();
   recordSwipe(q, re);
   S.pool.shift();
@@ -1527,6 +1552,24 @@ async function commit(q,re){
 }
 
 /* ═══════════ VIEWS ═══════════ */
+/* ═══════════ ANALYTICS (first-party, anonym) ═══════════ */
+const SESSION_ID = Math.random().toString(36).slice(2) + Date.now().toString(36);
+let curScreen=null, screenSince=0;
+async function track(name, props){
+  if(!currentUser) return;
+  try{ await sb.from('events').insert({ user_id: currentUser.id, name, props: Object.assign({ session: SESSION_ID }, props||{}) }); }
+  catch(e){ /* Analytics darf die App nie stören */ }
+}
+function flushScreen(){
+  if(curScreen && screenSince){
+    const secs=Math.round((Date.now()-screenSince)/1000);
+    if(secs>=1 && secs<7200) track('screen_time', { screen: curScreen, seconds: secs });
+  }
+}
+function enterScreen(name){ if(name===curScreen)return; flushScreen(); curScreen=name; screenSince=Date.now(); }
+document.addEventListener('visibilitychange', ()=>{ if(document.hidden){ flushScreen(); screenSince=Date.now(); } });
+window.addEventListener('pagehide', flushScreen);
+
 function setView(v){
   S.view=v;
   $('#viewForYou').classList.toggle('hidden',v!=='foryou');
@@ -1538,6 +1581,7 @@ function setView(v){
   if(v==='videos')renderVideos();
   if(v==='library')renderLibrary();
   if(v==='foryou')renderDeck();
+  if(S.mode!=='calib') enterScreen(v==='foryou'?'inspiration':v==='videos'?'bjoerns_fragen':'meine_fragen');
 }
 $$('#bnav button').forEach(b=>b.onclick=()=>setView(b.dataset.view));
 
@@ -1568,7 +1612,7 @@ function renderVideos(){
         <div class="vmeta"><div class="vtitle">${v.title}</div><div class="vinfo">${v.qs.length} Fragen${v.tag?' · '+v.tag:''}</div></div>
         ${isAdmin()?`<button class="vedit" data-edit="${v.id}" title="Set bearbeiten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button><button class="vdel" data-del="${v.id}" title="Set löschen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`:`<span class="vchev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>`}
       </div>`).join('')+`</div>`;
-  host.querySelectorAll('.vrow').forEach(el=>el.onclick=()=>{S.videoOpen=el.dataset.v;renderVideos();});
+  host.querySelectorAll('.vrow').forEach(el=>el.onclick=()=>{S.videoOpen=el.dataset.v;renderVideos();track('video_open',{id:el.dataset.v});});
   host.querySelectorAll('.vedit').forEach(b=>b.onclick=e=>{e.stopPropagation();openAdmin(b.dataset.edit);});
   host.querySelectorAll('.vdel').forEach(b=>b.onclick=e=>{e.stopPropagation();deleteVideoSet(b.dataset.del);});
 }
@@ -1783,6 +1827,7 @@ window.submitFeedback=async()=>{
   const { error } = await sb.from('feedback').insert({ text, name:name||null });
   if(error){ toast('Fehler: '+error.message); return; }
   toast('Danke für deinen Beitrag!');
+  track('feedback_submit');
   await loadFeedback();
 };
 window.toggleHeart=async(id)=>{
@@ -1794,8 +1839,51 @@ window.toggleHeart=async(id)=>{
   }catch(e){ console.error('toggleHeart',e); }
 };
 
-// ═══════════ TRENDING ═══════════
-window.openTrending=()=>{ $('#trendingBody').innerHTML='<div class="fbempty">Lädt…</div>'; openModal('mdTrending'); loadTrending(); };
+// ═══════════ ANALYTICS-DASHBOARD (Admin) ═══════════
+window.openAnalytics=()=>{ if(!isAdmin())return; $('#analyticsBody').innerHTML='<div class="fbempty">Lädt…</div>'; openModal('mdAnalytics'); loadAnalytics(); };
+function fmtDur(sec){ sec=Math.round(sec||0); if(sec<60)return sec+'s'; const m=Math.floor(sec/60); return m+'m '+(sec%60)+'s'; }
+async function loadAnalytics(){
+  try{
+    const { data, error } = await sb.rpc('admin_analytics');
+    if(error){ $('#analyticsBody').innerHTML='<div class="fbempty">Konnte nicht laden: '+error.message+'</div>'; return; }
+    if(!data || data.error){ $('#analyticsBody').innerHTML='<div class="fbempty">Kein Zugriff oder noch keine Daten.</div>'; return; }
+    const d=data;
+    const likeRate = d.swipes_total ? Math.round(100*d.likes_total/d.swipes_total) : 0;
+    const calibRate = d.users_total ? Math.round(100*d.calib_complete/d.users_total) : 0;
+    const avgSwipes = d.users_total ? Math.round(d.swipes_total/d.users_total) : 0;
+    const card=(v,l)=>`<div class="kpi"><div class="kv">${v}</div><div class="kl">${l}</div></div>`;
+    let html=`<div class="kgrid">
+      ${card(d.users_total||0,'Testnutzer')}
+      ${card(d.active_today||0,'Heute aktiv')}
+      ${card(d.active_7d||0,'Aktiv (7 T.)')}
+      ${card(calibRate+'%','Kalibrierung fertig')}
+      ${card(avgSwipes,'Ø Swipes/Nutzer')}
+      ${card(likeRate+'%','Like-Rate')}
+      ${card(d.saves_total||0,'Gemerkt')}
+      ${card(fmtDur(d.avg_session_sec),'Ø Sitzung')}
+    </div>`;
+
+    // Verweildauer je Screen
+    const st=d.screen_time||[]; const scLabel={inspiration:'Inspiration',bjoerns_fragen:'Björns Fragen',meine_fragen:'Meine Fragen',kalibrierung:'Kalibrierung'};
+    const maxSec=Math.max(1,...st.map(s=>+s.seconds));
+    html+=`<div class="ahead">Verweildauer je Screen</div>`;
+    html+= st.length? `<div class="bars">`+st.map(s=>`<div class="bar"><div class="bl">${scLabel[s.screen]||s.screen}</div><div class="btrack"><div class="bfill" style="width:${Math.round(100*s.seconds/maxSec)}%"></div></div><div class="bv">${fmtDur(s.seconds)} · ${s.views}×</div></div>`).join('')+`</div>` : `<div class="fbempty">Noch keine Daten.</div>`;
+
+    // Funnel
+    const ev=Object.fromEntries((d.events||[]).map(e=>[e.name,+e.n]));
+    const funnel=[['session_start','App geöffnet'],['calibration_start','Kalibrierung gestartet'],['calibration_complete','Kalibrierung fertig'],['save','Frage gemerkt'],['email_connect','E-Mail verbunden']];
+    const fmax=Math.max(1,...funnel.map(([k])=>ev[k]||0));
+    html+=`<div class="ahead">Funnel</div><div class="bars">`+funnel.map(([k,l])=>`<div class="bar"><div class="bl">${l}</div><div class="btrack"><div class="bfill" style="width:${Math.round(100*(ev[k]||0)/fmax)}%"></div></div><div class="bv">${ev[k]||0}</div></div>`).join('')+`</div>`;
+
+    // Feature-Nutzung
+    const feats=[['video_open','Björns Fragen geöffnet'],['trending_open','Trending geöffnet'],['feedback_submit','Feedback gesendet']];
+    html+=`<div class="ahead">Feature-Nutzung</div><div class="alist">`+feats.map(([k,l])=>`<div class="arow"><span>${l}</span><b>${ev[k]||0}</b></div>`).join('')+`</div>`;
+
+    html+=`<button class="minibtn" style="margin-top:16px;width:100%" onclick="loadAnalytics()">Aktualisieren</button>`;
+    $('#analyticsBody').innerHTML=html;
+  }catch(e){ console.error('loadAnalytics',e); $('#analyticsBody').innerHTML='<div class="fbempty">Fehler beim Laden.</div>'; }
+}
+window.openTrending=()=>{ $('#trendingBody').innerHTML='<div class="fbempty">Lädt…</div>'; openModal('mdTrending'); loadTrending(); track('trending_open'); };
 async function loadTrending(){
   try{
     const { data, error } = await sb.rpc('trending_questions');
@@ -1854,6 +1942,7 @@ function renderSelf(){
 
   // Menüzeilen: Feedback + Rechtliches
   html+=`<div class="setlist">
+    ${isAdmin()?`<button class="setrow" onclick="openAnalytics()"><span class="seti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/><rect x="17" y="13" width="3" height="4"/></svg></span><span class="sett">Analytics</span><span class="setchev">›</span></button>`:''}
     <button class="setrow" onclick="openFeedback()"><span class="seti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-11.9 7.6L3 21l1.9-6.1A8.4 8.4 0 1 1 21 11.5z"/></svg></span><span class="sett">Feedback &amp; Wünsche</span><span class="setchev">›</span></button>
     <button class="setrow" onclick="openModal('mdImpressum')"><span class="seti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg></span><span class="sett">Impressum</span><span class="setchev">›</span></button>
     <button class="setrow" onclick="openModal('mdPriv')"><span class="seti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/></svg></span><span class="sett">Datenschutz</span><span class="setchev">›</span></button>

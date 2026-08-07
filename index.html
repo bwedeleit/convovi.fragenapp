@@ -985,11 +985,42 @@ window.secureAccount = async ()=>{
   const email=(document.getElementById('secEmail')?.value||'').trim();
   if(!email){ toast('Bitte E-Mail eingeben'); return; }
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ toast('Bitte eine gültige E-Mail eingeben'); return; }
-  const { error } = await sb.auth.updateUser({ email });
-  if(error){ toast('Fehler: '+error.message); return; }
-  track('email_connect');
-  toast('Bestätigungs-Mail gesendet — bitte den Link darin öffnen');
+  const btn=$('#secBtn'); if(btn){ btn.disabled=true; btn.textContent='Verbinde…'; }
+  try{
+    // 1) Sicherstellen, dass eine gültige Sitzung existiert (sonst: „Auth session missing")
+    let { data:{ session } } = await sb.auth.getSession();
+    let created=false;
+    if(!session){
+      const { data, error } = await sb.auth.signInAnonymously();
+      if(error){ toast('Anmeldung nicht möglich: '+error.message); return; }
+      currentUser = data.user; routedIn = true; created = true;
+    } else {
+      currentUser = session.user;
+    }
+    // 2) Falls eine neue Sitzung nötig war: aktuellen Stand auf dieses Konto sichern
+    if(created){
+      try{ await saveProfile(); }catch(_){}
+      try{ await savePersons(); }catch(_){}
+      try{ await saveCollections(); }catch(_){}
+      try{ await resaveLibrary(); }catch(_){}
+    }
+    // 3) E-Mail mit dem Konto verbinden (gleiche user_id, alle Daten bleiben)
+    const { error } = await sb.auth.updateUser({ email });
+    if(error){ toast('Fehler: '+error.message); return; }
+    track('email_connect');
+    toast('Bestätigungs-Mail gesendet — bitte den Link darin öffnen');
+  }catch(e){ console.error('secureAccount', e); toast('Fehler: '+(e.message||e)); }
+  finally{ if(btn){ btn.disabled=false; btn.textContent='E-Mail verbinden'; } }
 };
+// Bibliothek (Mag ich / Gemerkt) auf das aktuelle Konto sichern
+async function resaveLibrary(){
+  if(!currentUser) return;
+  const rows=[
+    ...(S.liked||[]).map(q=>({user_id:currentUser.id, question_text:q.text, list_type:'liked'})),
+    ...(S.saved||[]).map(q=>({user_id:currentUser.id, question_text:q.text, list_type:'saved'}))
+  ];
+  if(rows.length) await sb.from('saved_questions').upsert(rows, { onConflict:'user_id,question_text,list_type' });
+}
 
 async function onLoggedIn(){
   const hasProfile = await loadProfile();   // nur das ist zum Routen nötig
@@ -1934,7 +1965,7 @@ function renderSelf(){
       <div class="lab">Konto mit E-Mail verbinden</div>
       <p class="securep">Verbinde dein Konto mit deiner E-Mail-Adresse. So sicherst du deinen Präferenz-Stand dauerhaft — und kannst dich damit auch von anderen Geräten in der App anmelden.</p>
       <input type="email" id="secEmail" class="secinput" placeholder="deine@email.de" />
-      <button class="bigbtn" onclick="secureAccount()">E-Mail verbinden</button>
+      <button class="bigbtn" id="secBtn" onclick="secureAccount()">E-Mail verbinden</button>
     </div>`;
   } else {
     html+=`<div class="securebox done"><div class="lab">✓ Konto verbunden</div><p class="securep">Angemeldet als ${currentUser.email}. Du kannst dich damit auf jedem Gerät anmelden.</p></div>`;

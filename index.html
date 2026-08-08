@@ -954,7 +954,12 @@ function showLogin(){
 
 // Legt bei Bedarf ein anonymes Schattenkonto an (ohne E-Mail)
 async function ensureAccount(){
-  if(currentUser) return true;
+  // Schon eine gültige Sitzung? Dann diese nutzen.
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(session){ currentUser = session.user; return true; }
+  }catch(_){}
+  // Neue anonyme Sitzung anlegen
   routedIn=true;   // verhindert, dass das ausgelöste SIGNED_IN-Event uns umleitet
   const { data, error } = await sb.auth.signInAnonymously();
   if(error){
@@ -963,6 +968,11 @@ async function ensureAccount(){
     routedIn=false; return false;
   }
   currentUser = data.user;
+  // Falls schon ein Stand im Speicher liegt (z. B. nach der Kalibrierung): jetzt sichern
+  try{ if(S.profile) await saveProfile(); }catch(_){}
+  try{ await savePersons(); }catch(_){}
+  try{ await saveCollections(); }catch(_){}
+  try{ await resaveLibrary(); }catch(_){}
   return true;
 }
 
@@ -1116,12 +1126,13 @@ function startMainDirect(){
   document.getElementById('actsMain').classList.remove('hidden');
   document.getElementById('mainNote').textContent='Fragen für deine Gespräche — rechts = mag ich, links = nö.';
   S.pool=[]; setView('foryou'); refill();
+  if(!currentUser) ensureAccount();   // falls das Konto beim Kalibrieren nicht angelegt werden konnte
 }
 
 // ═══════════ SWIPES + BIBLIOTHEK ═══════════
 let swipeSaveWarned=false;
 async function recordSwipe(q, re){
-  if(!currentUser) return;
+  if(!currentUser){ await ensureAccount(); if(!currentUser) return; }
   const reaction = re==='like' ? 'like' : re==='skip' ? 'nope' : re==='save' ? 'save' : null;
   if(!reaction) return;
   const { error } = await sb.from('swipes').insert({
